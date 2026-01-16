@@ -116,18 +116,18 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-hero-gradient">
-      <div className="relative overflow-hidden">
-        <div className="pointer-events-none absolute -top-40 right-0 h-96 w-96 rounded-full bg-electric/20 blur-[140px]" />
-        <div className="pointer-events-none absolute top-40 -left-32 h-72 w-72 rounded-full bg-teal/20 blur-[120px]" />
+    <div className="min-h-screen page-shell">
+      <div className="relative z-10">
+        <div className="pointer-events-none absolute -top-48 right-10 h-[28rem] w-[28rem] rounded-full bg-electric/20 blur-[160px]" />
+        <div className="pointer-events-none absolute top-32 -left-32 h-80 w-80 rounded-full bg-teal/20 blur-[140px]" />
 
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-ink/80 backdrop-blur">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <div className="flex items-center gap-2 text-lg font-semibold">
+        <header className="sticky top-0 z-40 border-b border-white/5 bg-ink/70 backdrop-blur">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
+            <div className="flex items-center gap-3 text-lg font-semibold tracking-tight">
               <Sparkles className="h-5 w-5 text-teal" />
               AI Sales Executive
             </div>
-            <nav className="hidden items-center gap-6 text-sm text-white/70 md:flex">
+            <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
               <a href="#how" className="hover:text-white">
                 How it Works
               </a>
@@ -140,7 +140,7 @@ export default function HomePage() {
             </nav>
             <a
               href="#pricing"
-              className="rounded-full bg-teal px-5 py-2 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5"
+              className="rounded-full bg-teal px-6 py-2.5 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5"
             >
               Start Scaling
             </a>
@@ -150,43 +150,43 @@ export default function HomePage() {
         <main>
           <motion.section
             {...motionProps}
-            className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-20 pt-16 lg:grid-cols-[1.1fr_0.9fr]"
+            className="mx-auto grid max-w-7xl items-center gap-16 px-6 pb-28 pt-20 lg:grid-cols-[1.05fr_0.95fr]"
           >
             <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/70">
+              <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-xs uppercase tracking-[0.4em] text-white/60">
                 B2B Outreach Infrastructure
               </div>
-              <h1 className="text-4xl font-semibold leading-tight text-white md:text-5xl">
+              <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl lg:text-7xl">
                 Scalable LinkedIn Outreach That Books B2B Meetings
               </h1>
-              <p className="mt-5 text-lg text-white/70">
+              <p className="mt-6 max-w-xl text-lg text-white/70 md:text-xl">
                 We provide AI Sales Executives--dedicated outbound operators that run LinkedIn outreach
                 at scale and book qualified B2B meetings directly into your calendar.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4">
+              <div className="mt-10 flex flex-wrap gap-5">
                 <a
                   href="#pricing"
-                  className="inline-flex items-center gap-2 rounded-full bg-electric px-6 py-3 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full bg-electric px-7 py-3.5 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5"
                 >
                   View Pricing
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="#how"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-semibold text-white/80 transition hover:border-white/30 hover:text-white"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-7 py-3.5 text-sm font-semibold text-white/80 transition hover:border-white/30 hover:text-white"
                 >
                   How It Works
                 </a>
               </div>
             </div>
 
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-6 shadow-soft">
+            <div className="glass-panel-strong rounded-[28px] p-8 shadow-soft">
               <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-white/60">
                 <span>Pipeline Overview</span>
                 <span className="rounded-full bg-teal/20 px-3 py-1 text-teal">Live</span>
               </div>
-              <div className="mt-6 grid gap-4">
-                <div className="rounded-2xl border border-white/10 bg-ink/60 p-4">
+              <div className="mt-8 grid gap-5">
+                <div className="glass-panel rounded-2xl p-5">
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-white/70">Prospects Contacted</p>
                     <span className="text-xl font-semibold text-white">2,438</span>
@@ -195,7 +195,7 @@ export default function HomePage() {
                     <div className="h-full w-[72%] rounded-full bg-teal" />
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-ink/60 p-4">
+                <div className="glass-panel rounded-2xl p-5">
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-white/70">Meetings Booked</p>
                     <span className="text-xl font-semibold text-white">86</span>
@@ -205,7 +205,7 @@ export default function HomePage() {
                     Calendar filling daily
                   </div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-ink/60 p-4">
+                <div className="glass-panel rounded-2xl p-5">
                   <p className="text-sm text-white/70">Today</p>
                   <div className="mt-3 grid grid-cols-4 gap-2">
                     {Array.from({ length: 8 }).map((_, index) => (
@@ -228,22 +228,22 @@ export default function HomePage() {
 
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-6xl px-6 pb-16"
+            className="mx-auto max-w-7xl px-6 py-24"
             id="why"
           >
-            <div className="mb-10 flex items-center justify-between">
-              <h2 className="text-3xl font-semibold">Why Companies Use Us</h2>
+            <div className="mb-12 flex items-center justify-between">
+              <h2 className="text-4xl font-semibold tracking-tight">Why Companies Use Us</h2>
               <span className="hidden text-sm uppercase tracking-[0.3em] text-white/40 md:block">
                 Value Proposition
               </span>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-2">
               {valueProps.map((item) => {
                 const Icon = item.icon;
                 return (
                   <div
                     key={item.title}
-                    className="rounded-2xl border border-white/10 bg-white/5 p-6 transition hover:border-white/20"
+                    className="glass-panel rounded-3xl p-8 transition hover:border-white/25"
                   >
                     <Icon className="h-6 w-6 text-teal" />
                     <h3 className="mt-4 text-xl font-semibold">{item.title}</h3>
@@ -256,20 +256,20 @@ export default function HomePage() {
 
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-6xl px-6 pb-16"
+            className="mx-auto max-w-7xl px-6 py-24"
             id="how"
           >
-            <div className="mb-10">
-              <h2 className="text-3xl font-semibold">How It Works</h2>
-              <p className="mt-3 text-white/70">
+            <div className="mb-12">
+              <h2 className="text-4xl font-semibold tracking-tight">How It Works</h2>
+              <p className="mt-4 max-w-2xl text-white/70">
                 A clear, repeatable process that turns LinkedIn into a dependable meeting engine.
               </p>
             </div>
-            <div className="grid gap-6 lg:grid-cols-4">
+            <div className="grid gap-8 lg:grid-cols-4">
               {steps.map((step, index) => (
                 <div
                   key={step.title}
-                  className="rounded-2xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6"
+                  className="glass-panel rounded-3xl p-7"
                 >
                   <div className="text-xs uppercase tracking-[0.3em] text-white/50">
                     Step {index + 1}
@@ -283,24 +283,24 @@ export default function HomePage() {
 
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-6xl px-6 pb-16"
+            className="mx-auto max-w-7xl px-6 py-24"
             id="audience"
           >
-            <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+            <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
               <div>
-                <h2 className="text-3xl font-semibold">Who This Is For</h2>
-                <p className="mt-3 text-white/70">
+                <h2 className="text-4xl font-semibold tracking-tight">Who This Is For</h2>
+                <p className="mt-4 text-white/70">
                   Revenue teams that already know their ICP and want consistent outbound volume.
                 </p>
-                <p className="mt-6 text-sm text-white/50">
+                <p className="mt-8 text-sm text-white/50">
                   Not for early-stage startups, solopreneurs, or low-ticket offers.
                 </p>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-5 md:grid-cols-2">
                 {audiences.map((audience) => (
                   <div
                     key={audience}
-                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-4"
+                    className="glass-panel flex items-center gap-3 rounded-3xl p-5"
                   >
                     <Check className="h-5 w-5 text-teal" />
                     <span className="text-sm font-medium">{audience}</span>
@@ -312,16 +312,16 @@ export default function HomePage() {
 
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-6xl px-6 pb-16"
+            className="mx-auto max-w-7xl px-6 py-24"
             id="pricing"
           >
-            <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr]">
               <div>
-                <h2 className="text-3xl font-semibold">Pricing</h2>
-                <p className="mt-3 text-white/70">
+                <h2 className="text-4xl font-semibold tracking-tight">Pricing</h2>
+                <p className="mt-4 max-w-xl text-white/70">
                   Start with a minimum of 5 AI Sales Executives. Scale up any time.
                 </p>
-                <div className="mt-8 rounded-3xl border border-white/10 bg-gradient-to-b from-white/10 to-white/5 p-6">
+                <div className="glass-panel-strong mt-10 rounded-[32px] p-8">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-white/60">Base price</p>
@@ -331,7 +331,7 @@ export default function HomePage() {
                       Per Executive
                     </div>
                   </div>
-                  <div className="mt-6 grid gap-4 md:grid-cols-[1fr_auto] md:items-center">
+                  <div className="mt-8 grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
                     <div>
                       <label className="text-xs uppercase tracking-[0.3em] text-white/50">
                         AI Executives
@@ -361,7 +361,7 @@ export default function HomePage() {
                       <span className="text-sm text-white/50">min 5</span>
                     </div>
                   </div>
-                  <div className="mt-6 flex items-center justify-between">
+                  <div className="mt-8 flex flex-wrap items-center justify-between gap-6">
                     <div>
                       <p className="text-sm text-white/60">Total Monthly Investment</p>
                       <p className="text-3xl font-semibold text-teal">
@@ -371,7 +371,7 @@ export default function HomePage() {
                     <button
                       onClick={handleCheckout}
                       disabled={isLoading}
-                      className="rounded-full bg-teal px-6 py-3 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                      className="rounded-full bg-teal px-7 py-3.5 text-sm font-semibold text-ink shadow-glow transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                       {isLoading ? "Redirecting..." : "Purchase Plan"}
                     </button>
@@ -381,12 +381,12 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
-              <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+              <div className="glass-panel rounded-[32px] p-8">
                 <div className="flex items-center gap-3">
                   <ShieldCheck className="h-6 w-6 text-electric" />
                   <h3 className="text-xl font-semibold">What you get</h3>
                 </div>
-                <ul className="mt-6 space-y-4 text-sm text-white/70">
+                <ul className="mt-8 space-y-5 text-sm text-white/70">
                   <li className="flex items-start gap-3">
                     <Check className="mt-0.5 h-4 w-4 text-teal" />
                     Dedicated AI Executive per account with daily outreach.
@@ -410,12 +410,12 @@ export default function HomePage() {
 
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-6xl px-6 pb-16"
+            className="mx-auto max-w-7xl px-6 py-24"
             id="faq"
           >
-            <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 p-8">
-              <h2 className="text-3xl font-semibold">Philosophy</h2>
-              <p className="mt-4 text-lg text-white/70">
+            <div className="glass-panel-strong rounded-[36px] p-10">
+              <h2 className="text-4xl font-semibold tracking-tight">Philosophy</h2>
+              <p className="mt-5 max-w-3xl text-lg text-white/70">
                 We do not promise \"viral results\" or shortcuts. We build reliable outbound
                 infrastructure that compounds over time.
               </p>
@@ -424,7 +424,7 @@ export default function HomePage() {
         </main>
 
         <footer className="border-t border-white/10 bg-ink/80">
-          <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-10 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
+          <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
             <p>(c) 2026 AI Sales Executive. All rights reserved.</p>
             <div className="flex flex-wrap gap-4">
               <a href="#" className="hover:text-white">

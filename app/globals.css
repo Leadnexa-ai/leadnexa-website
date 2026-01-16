@@ -4,13 +4,66 @@
 
 :root {
   color-scheme: dark;
+  --bg-0: #0b1220;
+  --bg-1: #0e1b33;
+  --bg-2: #0b2336;
+  --panel: rgba(255, 255, 255, 0.06);
+  --panel-strong: rgba(255, 255, 255, 0.1);
+  --border: rgba(255, 255, 255, 0.12);
+  --text-muted: rgba(255, 255, 255, 0.72);
+  --page-bg: radial-gradient(circle at 12% 18%, rgba(36, 211, 197, 0.18), transparent 52%),
+    radial-gradient(circle at 85% 10%, rgba(58, 169, 255, 0.2), transparent 48%),
+    linear-gradient(160deg, rgba(14, 27, 51, 0.85), rgba(11, 18, 32, 0.98));
 }
 
 body {
-  background-color: #0b1220;
+  background-color: var(--bg-0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 ::selection {
   background: rgba(58, 169, 255, 0.35);
+}
+
+@layer components {
+  .page-shell {
+    position: relative;
+    isolation: isolate;
+    background: var(--page-bg);
+    overflow: hidden;
+  }
+
+  .page-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(transparent 0 97%, rgba(255, 255, 255, 0.04) 100%),
+      linear-gradient(90deg, transparent 0 97%, rgba(255, 255, 255, 0.04) 100%);
+    background-size: 64px 64px;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .glass-panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+  }
+
+  .glass-panel-strong {
+    background: var(--panel-strong);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(16px);
+  }
 }
 

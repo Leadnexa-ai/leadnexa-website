@@ -1,8 +1,11 @@
 ﻿import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Space_Grotesk } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"]
+});
 
 export const metadata: Metadata = {
   title: "AI Sales Executive",
@@ -16,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-ink text-white antialiased`}>
+      <body className={`${spaceGrotesk.className} bg-ink text-white antialiased`}>
         {children}
       </body>
     </html>
