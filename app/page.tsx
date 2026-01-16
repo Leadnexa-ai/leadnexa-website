@@ -408,19 +408,6 @@ export default function HomePage() {
             </div>
           </motion.section>
 
-          <motion.section
-            {...motionProps}
-            className="mx-auto max-w-7xl px-6 py-24"
-            id="faq"
-          >
-            <div className="glass-panel-strong rounded-[36px] p-10">
-              <h2 className="text-4xl font-semibold tracking-tight">Philosophy</h2>
-              <p className="mt-5 max-w-3xl text-lg text-white/70">
-                We do not promise \"viral results\" or shortcuts. We build reliable outbound
-                infrastructure that compounds over time.
-              </p>
-            </div>
-          </motion.section>
         </main>
 
         <footer className="border-t border-white/10 bg-ink/80">
