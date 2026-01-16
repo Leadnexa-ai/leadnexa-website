@@ -14,7 +14,7 @@ module.exports = {
         mist: "#e6eefb"
       },
       boxShadow: {
-        glow: "0 0 40px rgba(58, 169, 255, 0.25)",
+        glow: "0 0 40px rgba(36, 211, 197, 0.25)",
         soft: "0 20px 60px rgba(9, 18, 38, 0.18)"
       },
       backgroundImage: {
