@@ -379,7 +379,30 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="mt-10 overflow-hidden rounded-3xl border border-white/10">
+              <div className="mt-10 grid gap-4 md:hidden">
+                {comparisonRows.map((row) => (
+                  <div
+                    key={row.label}
+                    className="glass-panel rounded-2xl border border-white/10 p-5"
+                  >
+                    <div className="text-xs uppercase tracking-[0.3em] text-white/50">
+                      {row.label}
+                    </div>
+                    <div className="mt-4 grid gap-3 text-sm text-white/70">
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">AI Sales Executive</span>
+                        <span className="font-semibold text-white">{row.ai}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-white/60">Human SDR</span>
+                        <span>{row.human}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-10 hidden overflow-hidden rounded-3xl border border-white/10 md:block">
                 <div className="grid grid-cols-[1.2fr_1fr_1fr] bg-white/5 text-sm font-semibold text-white">
                   <div className="px-6 py-4 text-white/60">Category</div>
                   <div className="px-6 py-4">AI Sales Executive</div>
