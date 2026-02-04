@@ -8,8 +8,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "AI Sales Executive",
-  description: "Scalable LinkedIn outreach that books B2B meetings."
+  title: "Leadnexa.Ai",
+  description: "Scalable cold email + LinkedIn outreach that books B2B meetings."
 };
 
 export default function RootLayout({

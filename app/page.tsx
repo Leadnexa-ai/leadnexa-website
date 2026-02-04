@@ -6,6 +6,7 @@ import {
   ArrowRight,
   CalendarCheck,
   Check,
+  Mail,
   ShieldCheck,
   Sparkles,
   TrendingUp,
@@ -31,19 +32,20 @@ const valueProps = [
   },
   {
     title: "B2B-native",
-    description: "Built specifically for LinkedIn decision-makers.",
+    description: "Built for email + LinkedIn decision-makers.",
     icon: ShieldCheck
   }
 ];
 
 const steps = [
   {
-    title: "Define Your ICP & Offer",
-    description: "We align on targeting."
+    title: "30-Minute Kickoff Call",
+    description:
+      "We align on your business, ideal customer profile, value proposition, and what qualifies as a lead, then build prospect lists."
   },
   {
     title: "Deploy AI Sales Executives",
-    description: "Human-like behavior, daily outreach."
+    description: "Daily cold email + LinkedIn outreach done by AI automatically."
   },
   {
     title: "Book Meetings",
@@ -78,7 +80,8 @@ const currency = new Intl.NumberFormat("en-US", {
 
 const pricingServices = [
   "5 AI Sales Executives",
-  "Daily outreach across LinkedIn",
+  "2,000 cold emails daily",
+  "Daily LinkedIn outreach",
   "Custom ICP + offer messaging",
   "Qualified meetings booked to your calendar",
   "Weekly performance insights",
@@ -88,7 +91,7 @@ const pricingServices = [
 const comparisonRows = [
   {
     label: "Monthly Cost",
-    ai: "$750 / month",
+    ai: "$3,500 / month",
     human: "$4,000-$7,000+ / month"
   },
   {
@@ -128,7 +131,7 @@ const comparisonRows = [
   },
   {
     label: "Channel Focus",
-    ai: "LinkedIn-native B2B",
+    ai: "Cold email + LinkedIn",
     human: "Often multi-tasked"
   },
   {
@@ -140,7 +143,7 @@ const comparisonRows = [
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
-  const pricePerSeat = 750;
+  const pricePerSeat = 700;
   const baseQuantity = 5;
   const baseTotal = pricePerSeat * baseQuantity;
 
@@ -177,7 +180,7 @@ export default function HomePage() {
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
             <div className="flex items-center gap-3 text-lg font-semibold tracking-tight">
               <Sparkles className="h-5 w-5 text-teal" />
-              AI Sales Executive
+              Leadnexa.Ai
             </div>
             <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
               <a href="#how" className="hover:text-white">
@@ -206,14 +209,15 @@ export default function HomePage() {
           >
             <div>
               <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-5 py-2.5 text-xs uppercase tracking-[0.4em] text-white/60">
-                B2B Outreach Infrastructure
+                B2B Outbound Infrastructure
               </div>
               <h1 className="text-5xl font-semibold leading-[1.05] tracking-tight text-white md:text-6xl lg:text-7xl">
-                Scalable LinkedIn Outreach That Books B2B Meetings
+                Scalable Cold Email + LinkedIn Outreach That Books B2B Meetings
               </h1>
               <p className="mt-6 max-w-xl text-lg text-white/70 md:text-xl">
-                We provide AI Sales Executives--dedicated outbound operators that run LinkedIn outreach
-                at scale and book qualified B2B meetings directly into your calendar.
+                We build prospect lists, then deploy AI Sales Executives to run daily cold email
+                campaigns and LinkedIn outreach that book qualified B2B meetings directly into your
+                calendar.
               </p>
               <div className="mt-10 flex flex-wrap gap-5">
                 <a
@@ -249,29 +253,22 @@ export default function HomePage() {
                 </div>
                 <div className="glass-panel rounded-2xl p-5">
                   <div className="flex items-center justify-between">
+                    <p className="text-sm text-white/70">Emails Sent</p>
+                    <span className="text-xl font-semibold text-white">10k+</span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
+                    <Mail className="h-4 w-4 text-electric" />
+                    Cold emails sent daily
+                  </div>
+                </div>
+                <div className="glass-panel rounded-2xl p-5">
+                  <div className="flex items-center justify-between">
                     <p className="text-sm text-white/70">Meetings Booked</p>
                     <span className="text-xl font-semibold text-white">86</span>
                   </div>
                   <div className="mt-3 flex items-center gap-2 text-xs text-white/60">
                     <CalendarCheck className="h-4 w-4 text-electric" />
                     Calendar filling daily
-                  </div>
-                </div>
-                <div className="glass-panel rounded-2xl p-5">
-                  <p className="text-sm text-white/70">Today</p>
-                  <div className="mt-3 grid grid-cols-4 gap-2">
-                    {Array.from({ length: 8 }).map((_, index) => (
-                      <div
-                        key={index}
-                        className={`h-10 rounded-lg border border-white/10 ${
-                          index % 3 === 0
-                            ? "bg-electric/40"
-                            : index % 2 === 0
-                            ? "bg-teal/30"
-                            : "bg-white/5"
-                        }`}
-                      />
-                    ))}
                   </div>
                 </div>
               </div>
@@ -314,7 +311,8 @@ export default function HomePage() {
             <div className="mb-12">
               <h2 className="text-4xl font-semibold tracking-tight">How It Works</h2>
               <p className="mt-4 max-w-2xl text-white/70">
-                A clear, repeatable process that turns LinkedIn into a dependable meeting engine.
+                A clear, repeatable process that turns cold email + LinkedIn into a dependable meeting
+                engine.
               </p>
             </div>
             <div className="grid gap-8 lg:grid-cols-4">
@@ -421,7 +419,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-3 text-white/80">
                   <ShieldCheck className="h-6 w-6 text-teal" />
-                  <span className="text-lg font-semibold">Growth</span>
+                  <span className="text-lg font-semibold">Standard</span>
                 </div>
                 <p className="mt-2 text-sm text-white/60">For scaling outbound teams.</p>
                 <div className="mt-8 flex items-end gap-3">
@@ -457,7 +455,7 @@ export default function HomePage() {
         <footer className="border-t border-white/10 bg-ink/80">
           <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-12 text-sm text-white/60 md:flex-row md:items-center md:justify-between">
             <p>
-              © 2026 AI Sales Executive. All rights reserved. AI Sales Executive Inc.
+              © 2026 Leadnexa.Ai. All rights reserved. Leadnexa.Ai Inc.
             </p>
             <div className="flex flex-wrap gap-4">
               <a href="#" className="hover:text-white">
