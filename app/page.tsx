@@ -343,7 +343,7 @@ export default function HomePage() {
                 How it works
               </a>
               <a href="#solutions" className="hover:text-teal transition-colors">
-                Solutions
+                Case Studies
               </a>
               <a href="#comparison" className="hover:text-teal transition-colors">
                 Why AI Agents

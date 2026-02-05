@@ -4,6 +4,28 @@ import Link from "next/link";
 export default function ItServicesCaseStudyPage() {
   return (
     <div className="min-h-screen page-shell">
+      <header className="sticky top-0 z-50 border-b border-white/5 bg-ink/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <Link href="/" className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-white">
+            <div className="bg-teal p-1.5 rounded-lg" />
+            Leadnexa.Ai
+          </Link>
+          <nav className="hidden items-center gap-10 text-sm font-medium text-white/60 md:flex">
+            <Link href="/#how" className="hover:text-teal transition-colors">
+              How it works
+            </Link>
+            <Link href="/#solutions" className="hover:text-teal transition-colors">
+              Case Studies
+            </Link>
+            <Link href="/#comparison" className="hover:text-teal transition-colors">
+              Why AI Agents
+            </Link>
+            <Link href="/#pricing" className="hover:text-teal transition-colors">
+              Pricing
+            </Link>
+          </nav>
+        </div>
+      </header>
       <div className="mx-auto max-w-4xl px-6 py-16">
         <Link
           href="/"
