@@ -39,7 +39,7 @@ html {
     position: relative;
     isolation: isolate;
     background: var(--page-bg);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .page-shell::before {

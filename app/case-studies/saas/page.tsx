@@ -14,7 +14,7 @@ export default function SaasCaseStudyPage() {
             <Link href="/#how" className="hover:text-teal transition-colors">
               How it works
             </Link>
-            <Link href="/#solutions" className="hover:text-teal transition-colors">
+            <Link href="/#case-studies" className="hover:text-teal transition-colors">
               Case Studies
             </Link>
             <Link href="/#comparison" className="hover:text-teal transition-colors">
@@ -28,11 +28,11 @@ export default function SaasCaseStudyPage() {
       </header>
       <div className="mx-auto max-w-4xl px-6 py-16">
         <Link
-          href="/"
+          href="/#case-studies"
           className="inline-flex items-center gap-2 text-sm text-white/50 hover:text-teal mb-8"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to homepage
+          Back to case studies
         </Link>
 
         <h1 className="text-4xl font-bold tracking-tight text-white mb-3">
