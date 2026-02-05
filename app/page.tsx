@@ -18,7 +18,8 @@ import {
   Lock,
   Brain,
   Bot,
-  Activity
+  Activity,
+  Star
 } from "lucide-react";
 
 // --- Data Definitions ---
@@ -120,7 +121,7 @@ const comparisonRows = [
   { label: "Consistency", traditional: "Varies by rep", ai: "Consistent, tracked" }
 ];
 
-const stepTimeline = ["Day 1", "Days 2-3", "Day 7", "Daily / Ongoing"];
+const stepTimeline = ["Day 1", "Days 2-3", "Day 4", "Daily / Ongoing"];
 
 const agentCapabilities = [
   {
@@ -153,20 +154,23 @@ const testimonials = [
   {
     quote:
       "Leadnexa's AI Agents replaced what used to be an entire SDR pod. In the first 90 days we added over 40 qualified demos to our pipeline.",
-    name: "Growth Lead, B2B SaaS Company",
-    detail: "Series A  -  North America"
+    name: "Growth Lead",
+    detail: "B2B SaaS, Series A  -  North America",
+    initials: "GL"
   },
   {
     quote:
       "We cut outbound tooling costs by ~30% while increasing meetings by 2.3x. The team now spends time on closing, not chasing replies.",
-    name: "VP Sales, IT Services Provider",
-    detail: "Mid-market  -  Global"
+    name: "VP Sales",
+    detail: "IT Services, Mid-market  -  Global",
+    initials: "VS"
   },
   {
     quote:
       "The AI Agent understands our value prop better than most new hires. Ramp time went from months to days.",
-    name: "Founder, Marketing Agency",
-    detail: "10-50 employees"
+    name: "Founder",
+    detail: "Marketing Agency, 10-50 employees",
+    initials: "FA"
   }
 ];
 
@@ -287,36 +291,40 @@ const UIMockup = () => (
     </div>
 
     {/* Agent avatars + conversation mock */}
-    <div className="glass-panel rounded-3xl p-4 border-white/10 flex flex-col gap-4">
+    <div className="glass-panel rounded-3xl p-6 border-white/10 bg-ink/60 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-xs text-white/40 uppercase tracking-[0.2em]">
           <Bot className="w-4 h-4 text-teal" />
           AI SALES AGENT SQUAD
         </div>
         <div className="flex items-center gap-2 text-[10px] text-white/40">
-          <Activity className="w-3 h-3 text-electric" />
+          <span className="inline-flex h-2 w-2 rounded-full bg-electric/70" />
           Running outbound across Email & LinkedIn
         </div>
       </div>
-      <div className="flex -space-x-2">
+      <div className="flex -space-x-2 items-center">
         {["Ava", "Leo", "Mia", "Kai"].map((name) => (
           <div
             key={name}
-            className="w-9 h-9 rounded-full border border-ink bg-gradient-to-br from-teal/40 to-electric/40 flex items-center justify-center text-[10px] font-semibold text-ink shadow-sm"
+            className="w-10 h-10 rounded-full border border-white/10 bg-gradient-to-br from-teal/30 to-electric/30 flex items-center justify-center text-[11px] font-semibold text-white shadow-sm"
           >
             {name}
           </div>
         ))}
       </div>
-      <div className="space-y-2 text-[11px] text-white/70">
-        <div className="flex gap-2 items-start">
-          <div className="px-2 py-1 rounded-full bg-teal/20 text-[10px] text-teal font-semibold">Ava  -  SDR Agent</div>
-          <div className="flex-1 px-3 py-2 rounded-2xl bg-white/5 border border-white/10">
-            Drafted 37 new intros for UK SaaS CEOs. Avg personalization score: 92%.
+      <div className="space-y-3 text-sm text-white/70">
+        <div className="flex items-start gap-3">
+          <div className="flex flex-col gap-2">
+            <div className="px-2 py-1 rounded-full bg-teal/15 text-[10px] text-teal font-semibold w-fit">
+              Ava — SDR Agent
+            </div>
+            <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
+              Drafted 37 new intros for UK SaaS CEOs. Avg personalization score: 92%.
+            </div>
           </div>
         </div>
-        <div className="flex gap-2 items-start justify-end">
-          <div className="flex-1 px-3 py-2 rounded-2xl bg-teal/10 border border-teal/30 text-right">
+        <div className="flex items-start justify-end">
+          <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-teal/10 border border-teal/30 text-right">
             Prioritize accounts with expansion potential & active hiring.
           </div>
         </div>
@@ -370,12 +378,6 @@ export default function HomePage() {
               </a>
             </nav>
             <div className="flex items-center gap-4">
-              <a
-                href="#pricing"
-                className="rounded-full bg-white/5 border border-white/10 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-white/10"
-              >
-                Log in
-              </a>
               <a
                 href="#pricing"
                 className="rounded-full bg-teal px-6 py-2.5 text-sm font-bold text-ink shadow-glow transition hover:-translate-y-0.5"
@@ -674,13 +676,24 @@ export default function HomePage() {
                   Leadnexa helps B2B teams move beyond manual prospecting and inconsistent outbound performance.
                   Here's what it looks like in practice.
                 </p>
-                <div className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
                   {testimonials.map((t) => (
                     <div key={t.name} className="glass-panel rounded-3xl p-6 border-white/10">
-                      <p className="text-sm text-white/80 leading-relaxed mb-3">{t.quote}</p>
-                      <p className="text-xs text-white/40 font-semibold tracking-[0.2em] uppercase">
-                        {t.name} | {t.detail}
-                      </p>
+                      <div className="flex items-center gap-1 text-amber-400 mb-4">
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <Star key={i} className="h-4 w-4 fill-amber-400" />
+                        ))}
+                      </div>
+                      <p className="text-sm text-white/80 leading-relaxed mb-5">{t.quote}</p>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-white/10 border border-white/10 flex items-center justify-center text-sm font-bold text-white">
+                          {t.initials}
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-white">{t.name}</p>
+                          <p className="text-xs text-white/40">{t.detail}</p>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
