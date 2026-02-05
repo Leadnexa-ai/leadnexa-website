@@ -652,8 +652,8 @@ export default function HomePage() {
               <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">HOW IT WORKS</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">High-Touch Setup in 4 Steps</h2>
               <p className="mt-6 text-white/60 text-lg leading-relaxed">
-                A concierge process that launches quickly, protects your brand, and keeps pipeline flowing—without you managing the day-to-day.
-
+                A concierge process that launches quickly, protects your brand, and keeps pipeline flowing—without you managing the day-to-day. With these four steps, we can start delivering qualified leads in{" "}
+                <span className="text-teal font-semibold">under two weeks</span>.
               </p>
             </div>
             <div className="mt-12 hidden lg:grid grid-cols-4 gap-6 lg:gap-10">
