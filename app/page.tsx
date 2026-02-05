@@ -464,11 +464,19 @@ export default function HomePage() {
           </motion.section>
 
           {/* Case Studies Section */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 pb-32" id="solutions">
-            <div className="mb-16 text-center">
-              <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Real Results From B2B Teams</h2>
-              <p className="mt-4 text-white/50 text-lg">
-                A few examples of how different B2B organizations use Leadnexa AI Agents to drive pipeline.
+          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-40" id="solutions">
+            <div className="mb-16 text-center max-w-3xl mx-auto">
+              <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">CASE STUDIES</p>
+              <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
+                Real results from real companies
+              </h2>
+              <p className="text-white/60 text-lg">
+                See how B2B companies across industries are using AI sales agents to scale pipeline, reduce
+                outbound costs and book more meetings.
+              </p>
+              <p className="mt-4 text-xs text-white/30">
+                * Company identities are anonymized to protect client confidentiality. All outcomes are based on
+                real campaigns.
               </p>
             </div>
             <div className="grid gap-6 md:grid-cols-3">
