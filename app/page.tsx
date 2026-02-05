@@ -373,7 +373,7 @@ export default function HomePage() {
           {/* Hero Section */}
           <motion.section
             {...motionProps}
-            className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-24 pt-24 lg:grid-cols-[1.1fr_0.9fr]"
+            className="mx-auto grid max-w-7xl items-center gap-12 px-6 pb-24 pt-24 lg:grid-cols-[1.1fr_0.9fr] scroll-mt-32"
           >
             <div>
               <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal/5 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.3em] text-teal">
@@ -437,7 +437,7 @@ export default function HomePage() {
           <TrustedLogos />
 
           {/* Bento Grid: Why Us */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-32" id="why">
+          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-32 scroll-mt-32" id="why">
             <div className="mb-16 text-center">
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Reinvent Your Outbound</h2>
               <p className="mt-4 text-white/50 text-lg">
@@ -464,7 +464,7 @@ export default function HomePage() {
           </motion.section>
 
           {/* Case Studies Section */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-40" id="solutions">
+          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-40 scroll-mt-32" id="solutions">
             <div className="mb-16 text-center max-w-3xl mx-auto">
               <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">CASE STUDIES</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
@@ -551,7 +551,7 @@ export default function HomePage() {
           {/* Comparison: AI Agents vs Traditional SDRs */}
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-7xl px-6 pb-32"
+            className="mx-auto max-w-7xl px-6 pb-32 scroll-mt-32"
             id="comparison"
           >
             <div className="mb-12 text-center">
@@ -735,7 +735,7 @@ export default function HomePage() {
           {/* Pricing Section */}
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-7xl px-6 py-32 text-center"
+            className="mx-auto max-w-7xl px-6 py-32 text-center scroll-mt-32"
             id="pricing"
           >
             <div className="max-w-3xl mx-auto mb-20">
