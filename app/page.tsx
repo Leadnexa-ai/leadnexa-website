@@ -90,7 +90,6 @@ const pricingServices = [
   "2,000 Cold Emails Sent Daily",
   "Automated LinkedIn Outreach",
   "Custom ICP & Messaging Strategy",
-  "Automated Calendar Booking",
   "Weekly Performance Insights",
   "Dedicated Success Manager"
 ];
@@ -121,7 +120,7 @@ const comparisonRows = [
   { label: "Consistency", traditional: "Varies by rep", ai: "Consistent, tracked" }
 ];
 
-const stepTimeline = ["Day 1", "Days 2-3", "Day 4", "Daily / Ongoing"];
+const stepTimeline = ["Day 1", "Days 2-3", "Day 4+", "Daily / Ongoing"];
 
 const agentCapabilities = [
   {
@@ -291,8 +290,8 @@ const UIMockup = () => (
     </div>
 
     {/* Agent avatars + conversation mock */}
-    <div className="glass-panel rounded-3xl p-6 border-white/10 bg-ink/60 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="glass-panel rounded-3xl border-white/10 bg-ink/60 overflow-hidden">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-white/5 bg-white/[0.03]">
         <div className="flex items-center gap-2 text-xs text-white/40 uppercase tracking-[0.2em]">
           <Bot className="w-4 h-4 text-teal" />
           AI SALES AGENT SQUAD
@@ -302,30 +301,44 @@ const UIMockup = () => (
           Running outbound across Email & LinkedIn
         </div>
       </div>
-      <div className="flex -space-x-2 items-center">
+      <div className="px-5 py-4 flex items-center gap-2 border-b border-white/5">
         {["Ava", "Leo", "Mia", "Kai"].map((name) => (
           <div
             key={name}
-            className="w-10 h-10 rounded-full border border-white/10 bg-gradient-to-br from-teal/30 to-electric/30 flex items-center justify-center text-[11px] font-semibold text-white shadow-sm"
+            className="w-8 h-8 rounded-full border border-white/10 bg-gradient-to-br from-teal/30 to-electric/30 flex items-center justify-center text-[10px] font-semibold text-white"
           >
             {name}
           </div>
         ))}
+        <span className="ml-2 text-[10px] text-white/40 uppercase tracking-[0.2em]">Live now</span>
       </div>
-      <div className="space-y-3 text-sm text-white/70">
+      <div className="px-5 py-5 space-y-4 text-sm text-white/70">
         <div className="flex items-start gap-3">
-          <div className="flex flex-col gap-2">
-            <div className="px-2 py-1 rounded-full bg-teal/15 text-[10px] text-teal font-semibold w-fit">
-              Ava — SDR Agent
+          <div className="w-8 h-8 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center text-[10px] font-bold text-teal">
+            AV
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-white">Ava — AI Agent</span>
+              <span className="text-[10px] text-white/40">09:41</span>
             </div>
-            <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-white/5 border border-white/10">
-              Drafted 37 new intros for UK SaaS CEOs. Avg personalization score: 92%.
+            <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-teal/10 border border-teal/30">
+              LinkedIn connection accepted by Sarah Miller. Deploying personalized follow-up.
             </div>
           </div>
         </div>
-        <div className="flex items-start justify-end">
-          <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-teal/10 border border-teal/30 text-right">
-            Prioritize accounts with expansion potential & active hiring.
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-teal/20 border border-teal/30 flex items-center justify-center text-[10px] font-bold text-teal">
+            LE
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-semibold text-white">Leo — AI Agent</span>
+              <span className="text-[10px] text-white/40">09:48</span>
+            </div>
+            <div className="max-w-[520px] px-4 py-3 rounded-2xl bg-teal/10 border border-teal/30">
+              Intent detected: [High Interest]. Prospect is asking about pricing and case studies.
+            </div>
           </div>
         </div>
       </div>
@@ -460,10 +473,11 @@ export default function HomePage() {
           {/* Comparison: AI Agents vs Traditional SDRs */}
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-7xl px-6 pt-16 pb-32"
+            className="scroll-mt-28 mx-auto max-w-7xl px-6 pt-16 pb-32"
             id="comparison"
           >
             <div className="mb-12 text-center">
+              <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">WHY AI AGENTS</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
                 Why AI Agents Beat Traditional SDR Teams
               </h2>
@@ -635,6 +649,7 @@ export default function HomePage() {
             id="how"
           >
             <div className="text-center max-w-3xl mx-auto">
+              <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">HOW IT WORKS</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Zero to Meeting in 4 Steps</h2>
               <p className="mt-6 text-white/60 text-lg leading-relaxed">
                 A simple, repeatable system to launch, run, and scale outbound without extra headcount.
@@ -646,7 +661,7 @@ export default function HomePage() {
                   <div className="w-11 h-11 rounded-full border-2 border-teal/50 bg-ink/70 flex items-center justify-center text-teal font-bold">
                     0{i + 1}
                   </div>
-                  <div className="text-xs uppercase tracking-[0.2em] text-white/50 font-semibold">
+                  <div className="text-xs uppercase tracking-[0.2em] text-white font-semibold">
                     {stepTimeline[i]}
                   </div>
                 </div>
@@ -744,7 +759,7 @@ export default function HomePage() {
                 Works With Your Stack
               </h2>
               <p className="text-white/60 text-lg">
-                Connects to the tools your team already uses for email, CRM, and scheduling.
+                No more logging into dozens of tools. Our AI filters for high-intent responses and routes them instantly to your existing stack (Slack, CRM, or Email). You focus on closing; we handle the plumbing.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
