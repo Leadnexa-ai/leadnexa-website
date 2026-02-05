@@ -65,5 +65,27 @@ html {
     border: 1px solid var(--border);
     backdrop-filter: blur(16px);
   }
-}
 
+  /* app/globals.css */
+  @layer components {
+    .bg-grid-white {
+      background-size: 40px 40px;
+      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    }
+
+    .glow-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-card::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(45deg, transparent, rgba(92, 224, 255, 0.3), transparent);
+      z-index: -1;
+      border-radius: inherit;
+    }
+  }
+}
