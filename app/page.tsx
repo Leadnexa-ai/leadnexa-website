@@ -62,12 +62,12 @@ const steps = [
       "We deep-dive into your business to define your Ideal Customer Profile (ICP) and craft highly-personalized multi-channel strategies."
   },
   {
-    title: "Infrastructure Deployment",
+    title: "Infrastructure Setup",
     description:
       "We set up dedicated sending domains, perform professional email warming, and synchronize LinkedIn profiles to ensure maximum deliverability and safety."
   },
   {
-    title: "AI-Powered Execution",
+    title: "AI-Powered Outreach",
     description:
       "Our AI agents launch hyper-personalized campaigns, adapting messaging in real-time based on prospect behavior and intent signals."
   },
@@ -395,7 +395,7 @@ export default function HomePage() {
                 href="#pricing"
                 className="rounded-full bg-teal px-6 py-2.5 text-sm font-bold text-ink shadow-glow transition hover:-translate-y-0.5"
               >
-                Book a Demo
+                Talk to Our Team
               </a>
             </div>
           </div>
@@ -413,7 +413,7 @@ export default function HomePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-teal"></span>
                 </span>
-                AI Agents for B2B Pipeline in 2026
+                High-Touch Lead Generation, Powered by AI
               </div>
               <h1 className="text-6xl font-bold leading-[1.05] tracking-tighter text-white lg:text-8xl">
                 Make AI Your
@@ -429,7 +429,7 @@ export default function HomePage() {
               <div className="mt-10 grid gap-3 text-sm text-white/50">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
-                  <span>From lead research to booked meetings, fully managed by AI Agents.</span>
+                  <span>High-Touch management: we run the engine; you focus on closing.</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
@@ -437,7 +437,7 @@ export default function HomePage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
-                  <span>Typical clients see 2-3x more meetings with lower outbound costs.</span>
+                  <span>You only get notified when a prospect shows real intent.</span>
                 </div>
               </div>
               <div className="mt-12 flex flex-wrap gap-5">
@@ -445,7 +445,7 @@ export default function HomePage() {
                   href="#pricing"
                   className="group inline-flex items-center gap-2 rounded-full bg-teal px-8 py-4 text-base font-bold text-ink shadow-glow transition hover:-translate-y-1"
                 >
-                  Book a Demo
+                  Talk to Our Team
                   <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </a>
                 <div className="flex -space-x-3 items-center ml-2">
@@ -473,7 +473,7 @@ export default function HomePage() {
           {/* Comparison: AI Agents vs Traditional SDRs */}
           <motion.section
             {...motionProps}
-            className="scroll-mt-28 mx-auto max-w-7xl px-6 pt-16 pb-32"
+            className="mx-auto max-w-7xl px-6 pt-16 pb-32"
             id="comparison"
           >
             <div className="mb-12 text-center">
@@ -482,8 +482,8 @@ export default function HomePage() {
                 Why AI Agents Beat Traditional SDR Teams
               </h2>
               <p className="mt-4 text-white/50 text-lg max-w-2xl mx-auto">
-                Keep the human closers. Let AI handle the repetitive, high-volume work of prospecting, outreach
-                and qualification.
+                Keep your closers focused on revenue. We run prospecting, outreach, follow-ups, and reply triage—powered by AI and managed like an internal team.
+
               </p>
             </div>
             <div className="mx-auto max-w-5xl glass-panel rounded-[36px] border border-teal/30 bg-ink/80 shadow-[0_0_80px_rgba(0,0,0,0.45)] overflow-hidden">
@@ -650,9 +650,10 @@ export default function HomePage() {
           >
             <div className="text-center max-w-3xl mx-auto">
               <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">HOW IT WORKS</p>
-              <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">Zero to Meeting in 4 Steps</h2>
+              <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">High-Touch Setup in 4 Steps</h2>
               <p className="mt-6 text-white/60 text-lg leading-relaxed">
-                A simple, repeatable system to launch, run, and scale outbound without extra headcount.
+                A concierge process that launches quickly, protects your brand, and keeps pipeline flowing—without you managing the day-to-day.
+
               </p>
             </div>
             <div className="mt-12 hidden lg:grid grid-cols-4 gap-6 lg:gap-10">
