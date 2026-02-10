@@ -365,7 +365,9 @@ const UIMockup = () => (
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [agentCount, setAgentCount] = useState(5);
+  const clientId = process.env.NEXT_PUBLIC_CLIENT_ID ?? "";
   const showTrustedLogos = process.env.NEXT_PUBLIC_SHOW_TRUSTED_LOGOS === "true";
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 
@@ -375,8 +377,41 @@ export default function HomePage() {
   const sliderProgress = ((agentCount - 1) / 29) * 100;
 
   const handleCheckout = async () => {
+    if (isLoading) {
+      return;
+    }
+
+    setCheckoutError(null);
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+
+    try {
+      const idempotencyKey = crypto.randomUUID();
+      const response = await fetch("/api/stripe/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-idempotency-key": idempotencyKey
+        },
+        body: JSON.stringify({ agents: agentCount, clientId: clientId || undefined })
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.error ?? "Unable to start checkout session.");
+      }
+
+      const checkoutUrl = payload?.url;
+      if (typeof checkoutUrl !== "string" || checkoutUrl.length === 0) {
+        throw new Error("Stripe did not return a checkout URL.");
+      }
+
+      window.location.assign(checkoutUrl);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to start checkout session.";
+      setCheckoutError(message);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -946,6 +981,9 @@ export default function HomePage() {
                 >
                   {isLoading ? "Redirecting..." : "Get Started & Begin Setup"}
                 </button>
+                {checkoutError && (
+                  <p className="mt-4 text-center text-sm text-rose-300">{checkoutError}</p>
+                )}
                 <p className="mt-6 text-center text-xs font-medium uppercase tracking-widest text-white/30">
                   Paid upfront. Subscription renews after the 14-day setup period. Cancel anytime.
                 </p>
