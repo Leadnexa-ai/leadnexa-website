@@ -78,18 +78,34 @@ const steps = [
   }
 ];
 
+// const pricingServices = [
+//   "1 established LinkedIn account per AI sales agent",
+//   "Email & LinkedIn outreach done for you",
+//   "Unlimited email campaigns",
+//   "High-volume cold email delivery",
+//   "Thousands of follow-up messages",
+//   "Custom ICP & messaging strategy",
+//   "Qualified lead list built",
+//   "1-on-1 onboarding & support",
+//   "Weekly performance insights",
+//   "Dedicated Success Manager"
+// ];
+
 const pricingServices = [
   "1 established LinkedIn account per AI sales agent",
-  "Email & LinkedIn outreach done for you",
-  "Unlimited email campaigns",
-  "High-volume cold email delivery",
-  "Thousands of follow-up messages",
+  "2 dedicated email inboxes per AI sales agent",
+  "Email & LinkedIn outreach with team handoff",
+  "Flexible outbound campaign setup",
+  "Scalable cold email delivery",
+  "Automated follow-up sequences",
+  "Deliverability managed end-to-end",
   "Custom ICP & messaging strategy",
-  "Qualified lead list built",
+  "Qualified lead list built based on your ICP",
   "1-on-1 onboarding & support",
   "Weekly performance insights",
   "Dedicated Success Manager"
 ];
+
 
 const comparison = {
   traditional: [
@@ -848,6 +864,7 @@ export default function HomePage() {
             id="pricing"
           >
             <div className="max-w-3xl mx-auto mb-20">
+              <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">PRICING</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl">
                 Simple, Transparent Pricing
               </h2>
@@ -923,10 +940,10 @@ export default function HomePage() {
                   disabled={isLoading}
                   className="w-full rounded-2xl bg-teal py-5 text-lg font-black text-ink shadow-glow transition hover:-translate-y-1 active:translate-y-0 disabled:opacity-50"
                 >
-                  {isLoading ? "Redirecting..." : "Start 14-Day Free Trial"}
+                  {isLoading ? "Redirecting..." : "Get Started & Begin Setup"}
                 </button>
                 <p className="mt-6 text-center text-xs font-medium uppercase tracking-widest text-white/30">
-                  No Credit Card Required | Cancel Anytime | Deploy Instantly
+                  Paid upfront. Subscription renews after the 14-day setup period. Cancel anytime.
                 </p>
               </div>
             </div>
