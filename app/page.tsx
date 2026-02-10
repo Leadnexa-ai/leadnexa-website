@@ -78,13 +78,6 @@ const steps = [
   }
 ];
 
-const results = [
-  { value: "24/7", label: "Outbound Execution" },
-  { value: "18%+", label: "Avg. Reply Rate" },
-  { value: "12k+", label: "Meetings Booked" },
-  { value: "95%", label: "Inbox Deliverability" }
-];
-
 const pricingServices = [
   "1 established LinkedIn account per AI sales agent",
   "Email & LinkedIn outreach done for you",
@@ -354,6 +347,7 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [agentCount, setAgentCount] = useState(5);
   const showTrustedLogos = process.env.NEXT_PUBLIC_SHOW_TRUSTED_LOGOS === "true";
+  const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 
   const unitPrice =
     agentCount <= 4 ? 750 : agentCount <= 10 ? 700 : agentCount <= 20 ? 650 : 600;
@@ -393,9 +387,11 @@ export default function HomePage() {
               <a href="#comparison" className="hover:text-teal transition-colors">
                 Why AI Agents
               </a>
-              <a href="#integrations" className="hover:text-teal transition-colors">
-                Integrations
-              </a>
+              {showIntegrations && (
+                <a href="#integrations" className="hover:text-teal transition-colors">
+                  Integrations
+                </a>
+              )}
               <a href="#pricing" className="hover:text-teal transition-colors">
                 Pricing
               </a>
@@ -439,11 +435,11 @@ export default function HomePage() {
               <div className="mt-10 grid gap-3 text-sm text-white/50">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
-                  <span>Each AI agent includes three email accounts and one established LinkedIn account.</span>
+                  <span>Each AI agent operates with two dedicated email inboxes and one established LinkedIn account.</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
-                  <span>Agents handle prospecting, messaging, follow-ups, and reply handling.</span>
+                  <span>Agents handle prospecting, personalized outreach, and follow-ups — routing qualified replies directly to your team.</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
@@ -483,7 +479,7 @@ export default function HomePage() {
           {/* Comparison: AI Agents vs Traditional SDRs */}
           <motion.section
             {...motionProps}
-            className="mx-auto max-w-7xl px-6 pt-16 pb-32"
+            className="scroll-mt-28 mx-auto max-w-7xl px-6 pt-16 pb-32"
             id="comparison"
           >
             <div className="mb-12 text-center">
@@ -553,7 +549,7 @@ export default function HomePage() {
           </motion.section>
 
           {/* Case Studies Section */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 pt-32 pb-16" id="case-studies">
+          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 pt-32 pb-28" id="case-studies">
             <div className="mb-16 text-center max-w-3xl mx-auto">
               <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">CASE STUDIES</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
@@ -570,7 +566,7 @@ export default function HomePage() {
             </div>
             <div className="grid gap-6 md:grid-cols-3">
               {/* SaaS Case */}
-              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex flex-col justify-between">
+              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex min-h-[580px] flex-col justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-teal/10 transition-colors">
                     <BarChart3 className="h-6 w-6 text-teal" />
@@ -583,16 +579,28 @@ export default function HomePage() {
                     to focus on product and closing.
                   </p>
                 </div>
-                <a
-                  href="/case-studies/saas"
-                  className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-teal"
-                >
-                  Learn more <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="mt-8">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Reply Rate</p>
+                      <p className="mt-1 text-xl font-bold text-teal">21%</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Leads / Month</p>
+                      <p className="mt-1 text-xl font-bold text-white">42</p>
+                    </div>
+                  </div>
+                  <a
+                    href="/case-studies/saas"
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-teal"
+                  >
+                    Learn more <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
 
               {/* IT Services Case */}
-              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex flex-col justify-between">
+              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex min-h-[580px] flex-col justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-teal/10 transition-colors">
                     <Users className="h-6 w-6 text-teal" />
@@ -605,16 +613,28 @@ export default function HomePage() {
                     decision-makers in 90 days.
                   </p>
                 </div>
-                <a
-                  href="/case-studies/it-services"
-                  className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-teal"
-                >
-                  Learn more <ArrowRight className="h-4 w-4" />
-                </a>
+                <div className="mt-8">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Reply Rate</p>
+                      <p className="mt-1 text-xl font-bold text-teal">17%</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Leads / Month</p>
+                      <p className="mt-1 text-xl font-bold text-white">31</p>
+                    </div>
+                  </div>
+                  <a
+                    href="/case-studies/it-services"
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-teal"
+                  >
+                    Learn more <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
               </div>
 
               {/* Henderson Case */}
-              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex flex-col justify-between">
+              <div className="glass-panel rounded-[32px] p-10 hover:border-teal/30 transition-all duration-500 group flex min-h-[580px] flex-col justify-between">
                 <div>
                   <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center group-hover:bg-teal/10 transition-colors">
                     <Sparkles className="h-6 w-6 text-teal" />
@@ -627,28 +647,25 @@ export default function HomePage() {
                     consultations with CFOs and technical leaders without adding SDR headcount.
                   </p>
                 </div>
-                <a
-                  href="/case-studies/henderson"
-                  className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-teal"
-                >
-                  Learn more <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
-            </div>
-          </motion.section>
-
-          {/* Results Stats */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 pt-8 pb-24">
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {results.map((result) => (
-                <div
-                  key={result.label}
-                  className="glass-panel rounded-3xl p-10 text-center hover:bg-white/5 transition-colors border-white/5"
-                >
-                  <div className="text-5xl font-bold text-teal mb-4">{result.value}</div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-white/40 font-bold">{result.label}</p>
+                <div className="mt-8">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Reply Rate</p>
+                      <p className="mt-1 text-xl font-bold text-teal">19%</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-3">
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">Leads / Month</p>
+                      <p className="mt-1 text-xl font-bold text-white">26</p>
+                    </div>
+                  </div>
+                  <a
+                    href="/case-studies/henderson"
+                    className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-teal"
+                  >
+                    Learn more <ArrowRight className="h-4 w-4" />
+                  </a>
                 </div>
-              ))}
+              </div>
             </div>
           </motion.section>
 
@@ -762,28 +779,29 @@ export default function HomePage() {
             </div>
           </motion.section>
 
-          {/* Integrations */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-24" id="integrations">
-            <div className="mb-12 text-center max-w-3xl mx-auto">
-              <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">INTEGRATIONS</p>
-              <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
-                Works With Your Stack
-              </h2>
-              <p className="text-white/60 text-lg">
-                No more logging into dozens of tools. Our AI filters for high-intent responses and routes them instantly to your existing stack (Slack, CRM, or Email). You focus on closing; we handle the plumbing.
-              </p>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {["Gmail", "Outlook", "HubSpot", "Salesforce", "Calendly", "Slack", "Apollo", "Zapier"].map((tool) => (
-                <div
-                  key={tool}
-                  className="glass-panel rounded-2xl p-6 border-white/10 text-center text-sm text-white/70 hover:border-teal/30 transition-colors"
-                >
-                  {tool}
-                </div>
-              ))}
-            </div>
-          </motion.section>
+          {showIntegrations && (
+            <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-24" id="integrations">
+              <div className="mb-12 text-center max-w-3xl mx-auto">
+                <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">INTEGRATIONS</p>
+                <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
+                  Works With Your Stack
+                </h2>
+                <p className="text-white/60 text-lg">
+                  No more logging into dozens of tools. Our AI filters for high-intent responses and routes them instantly to your existing stack (Slack, CRM, or Email). You focus on closing; we handle the plumbing.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                {["Gmail", "Outlook", "HubSpot", "Salesforce", "Calendly", "Slack", "Apollo", "Zapier"].map((tool) => (
+                  <div
+                    key={tool}
+                    className="glass-panel rounded-2xl p-6 border-white/10 text-center text-sm text-white/70 hover:border-teal/30 transition-colors"
+                  >
+                    {tool}
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+          )}
 
           {/* FAQ */}
           <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-32">
@@ -800,19 +818,19 @@ export default function HomePage() {
               {[
                 {
                   q: "How do you protect deliverability?",
-                  a: "We warm domains, throttle volumes, rotate inboxes, and monitor engagement to protect sender reputation."
+                  a: "We protect deliverability through gradual warm-up, controlled sending volumes, and continuous engagement monitoring — ensuring long-term sender reputation."
                 },
                 {
                   q: "How fast can we go live?",
                   a: "Most teams launch in 4-14 days after a kickoff and ICP alignment call."
                 },
                 {
-                  q: "Do you write and optimize messaging?",
-                  a: "Yes. We create multi-variant sequences and continuously improve based on reply and meeting rates."
+                  q: "What does the AI agent handle vs. our team?",
+                  a: "Our AI agents handle prospecting, personalized outreach, and follow-ups. Once a prospect shows interest, the conversation is handed off to your team to take over."
                 },
                 {
-                  q: "Can it connect to our CRM?",
-                  a: "Yes. We can sync to HubSpot or Salesforce and route qualified meetings into your calendar."
+                  q: "Do you write and optimize messaging?",
+                  a: "Yes. We create and test multi-variant outbound messaging, optimizing based on engagement signals and campaign performance."
                 }
               ].map((item) => (
                 <div key={item.q} className="glass-panel rounded-3xl p-6 border-white/10">

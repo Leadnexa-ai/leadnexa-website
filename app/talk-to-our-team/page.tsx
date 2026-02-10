@@ -1,6 +1,7 @@
 import { ArrowRight, CircleHelp, Sparkles, Target } from "lucide-react";
 
 const calEmbedUrl = process.env.NEXT_PUBLIC_CAL_EMBED_URL;
+const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 
 export default function TalkToOurTeamPage() {
   const hasCalUrl = Boolean(calEmbedUrl);
@@ -35,9 +36,11 @@ export default function TalkToOurTeamPage() {
               <a href="/#comparison" className="hover:text-teal transition-colors">
                 Why AI Agents
               </a>
-              <a href="/#integrations" className="hover:text-teal transition-colors">
-                Integrations
-              </a>
+              {showIntegrations && (
+                <a href="/#integrations" className="hover:text-teal transition-colors">
+                  Integrations
+                </a>
+              )}
               <a href="/#pricing" className="hover:text-teal transition-colors">
                 Pricing
               </a>
