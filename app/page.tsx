@@ -391,6 +391,7 @@ export default function HomePage() {
   const [agentCount, setAgentCount] = useState<number>(getInitialAgentCount);
   const showTrustedLogos = process.env.NEXT_PUBLIC_SHOW_TRUSTED_LOGOS === "true";
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
+  const dashboardUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "https://app.leadnexa.ai").replace(/\/$/, "");
 
   const unitPrice =
     agentCount <= 4 ? 750 : agentCount <= 10 ? 700 : agentCount <= 20 ? 650 : 600;
@@ -584,6 +585,16 @@ export default function HomePage() {
                     </button>
                     {isAccountMenuOpen && (
                       <div className="absolute right-0 top-[calc(100%+8px)] z-50 min-w-[160px] rounded-xl border border-white/15 bg-slate-900/95 p-2 shadow-xl backdrop-blur">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            window.location.assign(`${dashboardUrl}/portal`);
+                          }}
+                          className="mb-1 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-white transition hover:bg-white/10"
+                        >
+                          Go to Dashboard
+                        </button>
                         <button
                           type="button"
                           onClick={handleLogout}
