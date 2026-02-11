@@ -198,6 +198,20 @@ const motionProps = {
   viewport: { once: true, amount: 0.2 }
 };
 
+function getInitialAgentCount(): number {
+  if (typeof window === "undefined") {
+    return 5;
+  }
+
+  const rawValue = new URLSearchParams(window.location.search).get("agents");
+  const parsed = Number(rawValue);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 30) {
+    return 5;
+  }
+
+  return parsed;
+}
+
 // --- Components ---
 
 const TrustedLogos = () => (
@@ -374,7 +388,7 @@ export default function HomePage() {
   const [companyName, setCompanyName] = useState<string>("");
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
-  const [agentCount, setAgentCount] = useState(5);
+  const [agentCount, setAgentCount] = useState<number>(getInitialAgentCount);
   const showTrustedLogos = process.env.NEXT_PUBLIC_SHOW_TRUSTED_LOGOS === "true";
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 

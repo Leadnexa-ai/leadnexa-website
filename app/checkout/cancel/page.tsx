@@ -1,6 +1,23 @@
 import Link from "next/link";
 
-export default function CheckoutCancelPage() {
+type CheckoutCancelPageProps = {
+  searchParams?: {
+    agents?: string;
+  };
+};
+
+function parseAgents(value?: string): number | null {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1 || parsed > 30) {
+    return null;
+  }
+  return parsed;
+}
+
+export default function CheckoutCancelPage({ searchParams }: CheckoutCancelPageProps) {
+  const agents = parseAgents(searchParams?.agents);
+  const retryHref = agents ? `/?agents=${agents}#pricing` : "/#pricing";
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-white">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.2),transparent_45%),radial-gradient(circle_at_80%_10%,rgba(251,113,133,0.2),transparent_40%),linear-gradient(180deg,#020617_0%,#0b1120_45%,#111827_100%)]" />
@@ -20,7 +37,7 @@ export default function CheckoutCancelPage() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Link
-              href="/#pricing"
+              href={retryHref}
               className="rounded-xl bg-teal px-6 py-3 text-sm font-bold text-ink transition hover:opacity-90"
             >
               Try Checkout Again

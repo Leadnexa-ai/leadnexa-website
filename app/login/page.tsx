@@ -57,8 +57,18 @@ export default function LoginPage() {
           onSubmit={onSubmit}
           className="w-full rounded-3xl border border-white/15 bg-slate-900/60 p-8 shadow-[0_20px_80px_rgba(2,6,23,0.6)] backdrop-blur-md"
         >
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">Account Access</p>
-          <h1 className="mt-2 text-3xl font-bold">Log in</h1>
+          <div className="mb-2 flex items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal">Account Access</p>
+              <h1 className="mt-2 text-3xl font-bold">Log in</h1>
+            </div>
+            <Link
+              href="/"
+              className="mt-1 rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/85 transition hover:border-teal/40 hover:bg-white/10 hover:text-white"
+            >
+              Back to Home
+            </Link>
+          </div>
           <p className="mt-2 text-sm text-slate-300">Use your account email and password.</p>
 
           <label className="mt-6 block text-left text-sm font-medium text-slate-200">Email</label>

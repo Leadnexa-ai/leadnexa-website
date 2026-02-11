@@ -37,6 +37,17 @@ function getRequestIdempotencyKey(request: Request, principalId: string, agents:
   return `checkout_${fallbackHash}`;
 }
 
+function buildCancelUrlWithAgents(cancelUrl: string, agents: number): string {
+  try {
+    const url = new URL(cancelUrl);
+    url.searchParams.set("agents", String(agents));
+    return url.toString();
+  } catch {
+    const separator = cancelUrl.includes("?") ? "&" : "?";
+    return `${cancelUrl}${separator}agents=${encodeURIComponent(String(agents))}`;
+  }
+}
+
 async function hasActiveSubscription(clientId: string): Promise<boolean> {
   const supabase = createServerSupabase();
   const result = await supabase
@@ -127,11 +138,12 @@ export async function POST(request: Request) {
     }
 
     const idempotencyKey = getRequestIdempotencyKey(request, idempotencyPrincipal, agents);
+    const cancelUrlWithAgents = buildCancelUrlWithAgents(cancelUrl, agents);
 
     const params: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
       success_url: successUrl,
-      cancel_url: cancelUrl,
+      cancel_url: cancelUrlWithAgents,
       line_items: [
         {
           price: priceId,
