@@ -1,6 +1,6 @@
 ﻿"use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -19,6 +19,7 @@ import {
   Brain,
   Bot,
   Activity,
+  ChevronDown,
   Star
 } from "lucide-react";
 
@@ -366,8 +367,14 @@ const UIMockup = () => (
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authResolved, setAuthResolved] = useState(false);
+  const [companyName, setCompanyName] = useState<string>("");
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const [agentCount, setAgentCount] = useState(5);
-  const clientId = process.env.NEXT_PUBLIC_CLIENT_ID ?? "";
   const showTrustedLogos = process.env.NEXT_PUBLIC_SHOW_TRUSTED_LOGOS === "true";
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 
@@ -375,6 +382,100 @@ export default function HomePage() {
     agentCount <= 4 ? 750 : agentCount <= 10 ? 700 : agentCount <= 20 ? 650 : 600;
   const monthlyTotal = agentCount * unitPrice;
   const sliderProgress = ((agentCount - 1) / 29) * 100;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadSession = async () => {
+      try {
+        const response = await fetch("/api/me", { method: "GET" });
+        if (!isMounted) {
+          return;
+        }
+
+        if (!response.ok) {
+          setIsAuthenticated(false);
+          setCompanyName("");
+          return;
+        }
+
+        const payload = await response.json().catch(() => ({}));
+        const email = typeof payload?.email === "string" ? payload.email : "";
+        const fallbackFromEmail = email.includes("@") ? email.split("@")[0] : email;
+        const normalizedCompanyName =
+          typeof payload?.company_name === "string" && payload.company_name.trim().length > 0
+            ? payload.company_name.trim()
+            : fallbackFromEmail || "Account";
+
+        setIsAuthenticated(true);
+        setCompanyName(normalizedCompanyName);
+      } catch {
+        if (isMounted) {
+          setIsAuthenticated(false);
+          setCompanyName("");
+        }
+      } finally {
+        if (isMounted) {
+          setAuthResolved(true);
+        }
+      }
+    };
+
+    void loadSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!isAccountMenuOpen) {
+        return;
+      }
+
+      const target = event.target as Node | null;
+      if (!target) {
+        return;
+      }
+
+      if (accountMenuRef.current && !accountMenuRef.current.contains(target)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [isAccountMenuOpen]);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) {
+      return;
+    }
+
+    setAuthError(null);
+    setIsLoggingOut(true);
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST"
+      });
+
+      if (!response.ok) {
+        throw new Error("Unable to log out right now.");
+      }
+
+      setIsAuthenticated(false);
+      setCompanyName("");
+      setIsAccountMenuOpen(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to log out right now.";
+      setAuthError(message);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   const handleCheckout = async () => {
     if (isLoading) {
@@ -392,11 +493,15 @@ export default function HomePage() {
           "Content-Type": "application/json",
           "x-idempotency-key": idempotencyKey
         },
-        body: JSON.stringify({ agents: agentCount, clientId: clientId || undefined })
+        body: JSON.stringify({ agents: agentCount })
       });
 
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
+        if (response.status === 401) {
+          window.location.assign("/login?next=/#pricing");
+          return;
+        }
         throw new Error(payload?.error ?? "Unable to start checkout session.");
       }
 
@@ -451,7 +556,47 @@ export default function HomePage() {
                 Pricing
               </a>
             </nav>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
+              {authResolved &&
+                (isAuthenticated ? (
+                  <div className="relative" ref={accountMenuRef}>
+                    <button
+                      type="button"
+                      onClick={() => setIsAccountMenuOpen((open) => !open)}
+                      className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-teal/40 hover:bg-white/10"
+                    >
+                      <span className="max-w-[140px] truncate">{companyName || "Account"}</span>
+                      <ChevronDown className="h-4 w-4 text-white/70" />
+                    </button>
+                    {isAccountMenuOpen && (
+                      <div className="absolute right-0 top-[calc(100%+8px)] z-50 min-w-[160px] rounded-xl border border-white/15 bg-slate-900/95 p-2 shadow-xl backdrop-blur">
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          disabled={isLoggingOut}
+                          className="w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-60"
+                        >
+                          {isLoggingOut ? "Logging out..." : "Logout"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <a
+                      href="/login?next=/#pricing"
+                      className="rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:border-teal/40 hover:bg-white/10"
+                    >
+                      Login
+                    </a>
+                    <a
+                      href="/register?next=/#pricing"
+                      className="rounded-full border border-teal/40 bg-teal/10 px-4 py-2 text-sm font-semibold text-teal transition hover:bg-teal/20"
+                    >
+                      Register
+                    </a>
+                  </>
+                ))}
               <a
                 href="/talk-to-our-team"
                 className="rounded-full bg-teal px-6 py-2.5 text-sm font-bold text-ink shadow-glow transition hover:-translate-y-0.5"
@@ -460,6 +605,11 @@ export default function HomePage() {
               </a>
             </div>
           </div>
+          {authError && (
+            <div className="mx-auto max-w-7xl px-6 pb-3">
+              <p className="text-right text-xs text-rose-300">{authError}</p>
+            </div>
+          )}
         </header>
 
         <main>

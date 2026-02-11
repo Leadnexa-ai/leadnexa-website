@@ -1,8 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
+import { createServerSupabase } from "./supabase-admin";
 
 type ClientSubscriptionInsert = {
   client_id: string;
+  client_email: string | null;
   stripe_customer_id: string;
   stripe_subscription_id: string;
   stripe_checkout_session_id: string;
@@ -25,17 +26,7 @@ type ClientSubscriptionUpdate = {
 };
 
 function getSupabaseAdmin() {
-  // Server-only env vars for webhook/API routes.
-  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !serviceRoleKey) {
-    throw new Error("Missing SUPABASE_URL (or NEXT_PUBLIC_SUPABASE_URL) / SUPABASE_SERVICE_ROLE_KEY.");
-  }
-
-  return createClient(url, serviceRoleKey, {
-    auth: { persistSession: false, autoRefreshToken: false }
-  });
+  return createServerSupabase();
 }
 
 function toIsoFromUnixSeconds(value: number): string {
@@ -88,6 +79,7 @@ export async function insertClientSubscriptionFromCheckout(input: {
     input.stripeSubscription.trial_end ?? input.stripeSubscription.billing_cycle_anchor;
   const payload: ClientSubscriptionInsert = {
     client_id: clientId,
+    client_email: input.customerEmail?.trim() || null,
     stripe_customer_id: input.stripeCustomerId,
     stripe_subscription_id: input.stripeSubscription.id,
     stripe_checkout_session_id: input.checkoutSessionId,

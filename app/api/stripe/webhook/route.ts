@@ -5,6 +5,7 @@ import {
   insertClientSubscriptionFromCheckout,
   updateClientSubscriptionFromStripeSubscription
 } from "../../../../lib/subscription-records";
+import { activatePendingSignupFromCheckout } from "../../../../lib/pending-signups";
 import { stripe } from "../../../../lib/stripe";
 
 export const runtime = "nodejs";
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
         typeof session.subscription === "string"
           ? session.subscription
           : session.subscription?.id;
-      const explicitClientId = String(session.metadata?.client_id ?? "").trim();
+      const pendingSignupId = String(session.metadata?.pending_signup_id ?? "").trim();
+      let explicitClientId = String(session.metadata?.client_id ?? "").trim();
       const customerName = session.customer_details?.name ?? undefined;
       const customerEmail = session.customer_details?.email ?? undefined;
 
@@ -51,6 +53,16 @@ export async function POST(request: Request) {
           { error: "Missing customer/subscription on checkout session." },
           { status: 400 }
         );
+      }
+
+      if (!explicitClientId && pendingSignupId) {
+        const activation = await activatePendingSignupFromCheckout({
+          pendingSignupId,
+          checkoutSessionId: session.id,
+          customerName,
+          customerEmail
+        });
+        explicitClientId = activation.clientId;
       }
 
       const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId, {

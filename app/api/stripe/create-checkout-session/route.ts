@@ -1,10 +1,14 @@
 import { createHash } from "crypto";
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { getSessionFromCookie } from "../../../../lib/auth-session";
 import { getTierForAgentCount } from "../../../../lib/leadnexa-pricing";
+import { getPendingSignupById } from "../../../../lib/pending-signups";
+import { createServerSupabase } from "../../../../lib/supabase-admin";
 import { stripe } from "../../../../lib/stripe";
 
 export const runtime = "nodejs";
+const ACTIVE_SUBSCRIPTION_STATUSES = ["active", "trialing"];
 
 function getCheckoutUrls() {
   const successUrl = process.env.STRIPE_SUCCESS_URL;
@@ -17,30 +21,49 @@ function getCheckoutUrls() {
   return { successUrl, cancelUrl };
 }
 
-function getCouponId() {
-  const couponId = process.env.STRIPE_COUPON_25_OFF_ID;
-  if (!couponId) {
-    throw new Error("Missing STRIPE_COUPON_25_OFF_ID.");
-  }
-  return couponId;
+function getCouponId(): string | null {
+  const couponId = process.env.STRIPE_COUPON_25_OFF_ID?.trim();
+  return couponId && couponId.length > 0 ? couponId : null;
 }
 
-function getRequestIdempotencyKey(request: Request, clientId: string, agents: number) {
+function getRequestIdempotencyKey(request: Request, principalId: string, agents: number) {
   const headerValue = request.headers.get("x-idempotency-key")?.trim();
   if (headerValue) {
     return `checkout_${headerValue}`;
   }
 
-  const fallbackRaw = `${clientId}:${agents}:${request.headers.get("x-forwarded-for") ?? "unknown"}`;
+  const fallbackRaw = `${principalId}:${agents}:${request.headers.get("x-forwarded-for") ?? "unknown"}`;
   const fallbackHash = createHash("sha256").update(fallbackRaw).digest("hex").slice(0, 32);
   return `checkout_${fallbackHash}`;
 }
 
+async function hasActiveSubscription(clientId: string): Promise<boolean> {
+  const supabase = createServerSupabase();
+  const result = await supabase
+    .from("client_subscriptions")
+    .select("id")
+    .eq("client_id", clientId)
+    .in("status", ACTIVE_SUBSCRIPTION_STATUSES)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (result.error) {
+    throw new Error(`Failed to check existing subscription: ${result.error.message}`);
+  }
+
+  return Boolean(result.data?.id);
+}
+
 export async function POST(request: Request) {
   try {
+    const authSession = getSessionFromCookie();
+    if (!authSession) {
+      return NextResponse.json({ error: "You must be logged in to start checkout." }, { status: 401 });
+    }
+
     const body = await request.json().catch(() => ({}));
     const agents = Number(body?.agents);
-    const clientId = String(body?.clientId ?? "").trim();
 
     if (!Number.isInteger(agents) || agents < 1 || agents > 30) {
       return NextResponse.json(
@@ -48,17 +71,62 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
     const { priceId } = getTierForAgentCount(agents);
     const { successUrl, cancelUrl } = getCheckoutUrls();
     const couponId = getCouponId();
-    const idempotencyKey = getRequestIdempotencyKey(request, clientId || "new-client", agents);
-    const metadata: Record<string, string> = {
-      agents: String(agents),
-      recurring_price_id: priceId
-    };
-    if (clientId) {
+    const metadata: Record<string, string> = { agents: String(agents), recurring_price_id: priceId };
+    let idempotencyPrincipal = "";
+
+    if (authSession.session_type === "app") {
+      const clientId = authSession.client_id;
+      const alreadySubscribed = await hasActiveSubscription(clientId);
+      if (alreadySubscribed) {
+        return NextResponse.json(
+          { error: "Your account already has an active subscription." },
+          { status: 409 }
+        );
+      }
+
       metadata.client_id = clientId;
+      idempotencyPrincipal = `client_${clientId}`;
+    } else {
+      const pendingSignup = await getPendingSignupById(authSession.pending_signup_id);
+      if (!pendingSignup) {
+        return NextResponse.json({ error: "Pending signup not found." }, { status: 401 });
+      }
+
+      if (pendingSignup.status === "expired") {
+        return NextResponse.json(
+          { error: "Signup has expired. Please register again." },
+          { status: 409 }
+        );
+      }
+
+      if (pendingSignup.status === "activated" && pendingSignup.client_id) {
+        const alreadySubscribed = await hasActiveSubscription(pendingSignup.client_id);
+        if (alreadySubscribed) {
+          return NextResponse.json(
+            { error: "Your account already has an active subscription." },
+            { status: 409 }
+          );
+        }
+        metadata.client_id = pendingSignup.client_id;
+      }
+
+      if (pendingSignup.status === "activated" && !pendingSignup.client_id) {
+        return NextResponse.json(
+          { error: "Activated signup is missing client linkage." },
+          { status: 500 }
+        );
+      }
+
+      metadata.pending_signup_id = pendingSignup.id;
+      metadata.pending_signup_email = pendingSignup.email;
+      idempotencyPrincipal = `pending_${pendingSignup.id}`;
     }
+
+    const idempotencyKey = getRequestIdempotencyKey(request, idempotencyPrincipal, agents);
 
     const params: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
@@ -71,19 +139,19 @@ export async function POST(request: Request) {
         }
       ],
       subscription_data: { metadata },
-      discounts: [{ coupon: couponId }],
+      discounts: couponId ? [{ coupon: couponId }] : undefined,
       metadata
     };
 
-    const session = await stripe.checkout.sessions.create(params, { idempotencyKey });
+    const checkoutSession = await stripe.checkout.sessions.create(params, { idempotencyKey });
 
-    if (!session.url) {
+    if (!checkoutSession.url) {
       return NextResponse.json({ error: "Stripe session URL missing." }, { status: 500 });
     }
 
     return NextResponse.json({
-      url: session.url,
-      sessionId: session.id
+      url: checkoutSession.url,
+      sessionId: checkoutSession.id
     });
   } catch (error) {
     const message =
