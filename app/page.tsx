@@ -1145,7 +1145,7 @@ export default function HomePage() {
                       <div className="mt-1 rounded-full bg-teal/20 p-0.5">
                         <Check className="h-3.5 w-3.5 text-teal" />
                       </div>
-                      <span className="text-sm font-medium leading-relaxed text-white/70">{service}</span>
+                      <span className="text-sm font-medium leading-relaxed text-white">{service}</span>
                     </div>
                   ))}
                 </div>
@@ -1159,8 +1159,8 @@ export default function HomePage() {
                 {checkoutError && (
                   <p className="mt-4 text-center text-sm text-rose-300">{checkoutError}</p>
                 )}
-                <p className="mt-6 text-center text-xs font-medium uppercase tracking-widest text-white/30">
-                  Paid upfront. Subscription renews after the 14-day setup period. Cancel anytime.
+                <p className="mt-6 text-center text-xs font-medium uppercase tracking-widest text-white">
+                  Paid upfront. Get <span className="font-bold text-teal">25% off</span> your first month. Cancel anytime.
                 </p>
               </div>
             </div>
