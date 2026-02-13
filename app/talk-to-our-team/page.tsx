@@ -1,4 +1,5 @@
 import { ArrowRight, CircleHelp, Sparkles, Target } from "lucide-react";
+import Image from "next/image";
 
 const calEmbedUrl = process.env.NEXT_PUBLIC_CAL_EMBED_URL;
 const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
@@ -19,12 +20,9 @@ export default function TalkToOurTeamPage() {
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
             <a
               href="/"
-              className="flex items-center gap-2.5 text-xl font-bold tracking-tight text-white hover:text-teal transition-colors"
+              className="flex items-center transition-opacity hover:opacity-90"
             >
-              <div className="bg-teal p-1.5 rounded-lg">
-                <Sparkles className="h-5 w-5 text-ink" />
-              </div>
-              LeadNexa.ai
+              <Image src="/logo.png" alt="LeadNexa logo" width={170} height={40} className="h-8 w-auto" priority />
             </a>
             <nav className="hidden items-center gap-10 text-sm font-medium text-white/60 md:flex">
               <a href="/#how" className="hover:text-teal transition-colors">
