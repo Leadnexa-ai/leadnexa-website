@@ -1,36 +1,72 @@
-export type TierKey = "tier_750" | "tier_700" | "tier_650" | "tier_600";
+export type PlanCode = "linkedin_scale" | "multichannel_scale";
 
-export type TierInfo = {
-  key: TierKey;
-  unitPrice: number;
-  priceId: string;
+export type PlanPricingInfo = {
+  plan: PlanCode;
+  basePriceId: string;
+  additionalPriceId: string;
+  baseIncludedAgents: number;
+  additionalAgents: number;
+  monthlyDisplayTotal: number;
 };
 
-export function getTierForAgentCount(agents: number): TierInfo {
-  if (!Number.isInteger(agents) || agents < 3 || agents > 30) {
-    throw new Error("Agents must be an integer between 3 and 30.");
+const MIN_AGENTS = 2;
+const MAX_AGENTS = 30;
+const BASE_INCLUDED_AGENTS = 2;
+
+type PlanAmounts = {
+  baseAmount: number;
+  additionalAmount: number;
+};
+
+const PLAN_AMOUNTS: Record<PlanCode, PlanAmounts> = {
+  linkedin_scale: {
+    baseAmount: 750,
+    additionalAmount: 300
+  },
+  multichannel_scale: {
+    baseAmount: 1350,
+    additionalAmount: 550
+  }
+};
+
+export function isPlanCode(value: unknown): value is PlanCode {
+  return value === "linkedin_scale" || value === "multichannel_scale";
+}
+
+export function getPlanPricing(plan: PlanCode, agents: number): PlanPricingInfo {
+  if (!Number.isInteger(agents) || agents < MIN_AGENTS || agents > MAX_AGENTS) {
+    throw new Error(`Agents must be an integer between ${MIN_AGENTS} and ${MAX_AGENTS}.`);
   }
 
-  const priceId750 = process.env.PRICE_ID_TIER_750;
-  const priceId700 = process.env.PRICE_ID_TIER_700;
-  const priceId650 = process.env.PRICE_ID_TIER_650;
-  const priceId600 = process.env.PRICE_ID_TIER_600;
+  const linkedinBase = process.env.PRICE_ID_LINKEDIN_BASE_2;
+  const linkedinAdditional = process.env.PRICE_ID_LINKEDIN_ADDL_AGENT;
+  const multichannelBase = process.env.PRICE_ID_MULTICHANNEL_BASE_2;
+  const multichannelAdditional = process.env.PRICE_ID_MULTICHANNEL_ADDL_AGENT;
 
-  if (!priceId750 || !priceId700 || !priceId650 || !priceId600) {
-    throw new Error("Missing one or more Stripe tier price IDs.");
+  if (!linkedinBase || !linkedinAdditional || !multichannelBase || !multichannelAdditional) {
+    throw new Error("Missing one or more Stripe plan price IDs.");
   }
 
-  if (agents <= 5) {
-    return { key: "tier_750", unitPrice: 750, priceId: priceId750 };
+  const additionalAgents = Math.max(agents - BASE_INCLUDED_AGENTS, 0);
+  const planAmounts = PLAN_AMOUNTS[plan];
+
+  if (plan === "linkedin_scale") {
+    return {
+      plan,
+      basePriceId: linkedinBase,
+      additionalPriceId: linkedinAdditional,
+      baseIncludedAgents: BASE_INCLUDED_AGENTS,
+      additionalAgents,
+      monthlyDisplayTotal: planAmounts.baseAmount + additionalAgents * planAmounts.additionalAmount
+    };
   }
 
-  if (agents <= 10) {
-    return { key: "tier_700", unitPrice: 700, priceId: priceId700 };
-  }
-
-  if (agents <= 20) {
-    return { key: "tier_650", unitPrice: 650, priceId: priceId650 };
-  }
-
-  return { key: "tier_600", unitPrice: 600, priceId: priceId600 };
+  return {
+    plan,
+    basePriceId: multichannelBase,
+    additionalPriceId: multichannelAdditional,
+    baseIncludedAgents: BASE_INCLUDED_AGENTS,
+    additionalAgents,
+    monthlyDisplayTotal: planAmounts.baseAmount + additionalAgents * planAmounts.additionalAmount
+  };
 }
