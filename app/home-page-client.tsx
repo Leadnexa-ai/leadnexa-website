@@ -95,7 +95,7 @@ const MAX_AGENTS = 30;
 const PLAN_CONFIGS: Record<PlanCode, PlanConfig> = {
   linkedin_scale: {
     code: "linkedin_scale",
-    label: "Plan 1 - LinkedIn Scale",
+    label: "Plan 1 - LinkedIn Scaling",
     baseMonthly: 750,
     additionalMonthly: 300,
     services: [
@@ -112,7 +112,7 @@ const PLAN_CONFIGS: Record<PlanCode, PlanConfig> = {
   },
   multichannel_scale: {
     code: "multichannel_scale",
-    label: "Plan 2 - Multi-Channel Scale",
+    label: "Plan 2 - Multi-Channel Scaling",
     baseMonthly: 1350,
     additionalMonthly: 550,
     services: [
