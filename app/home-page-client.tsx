@@ -84,7 +84,6 @@ type PlanCode = "linkedin_scale" | "multichannel_scale";
 type PlanConfig = {
   code: PlanCode;
   label: string;
-  badge: string;
   baseMonthly: number;
   additionalMonthly: number;
   services: string[];
@@ -97,36 +96,34 @@ const PLAN_CONFIGS: Record<PlanCode, PlanConfig> = {
   linkedin_scale: {
     code: "linkedin_scale",
     label: "Plan 1 - LinkedIn Scale",
-    badge: "LinkedIn Outreach",
     baseMonthly: 750,
     additionalMonthly: 300,
     services: [
-      "2 AI sales agents included",
       "1 established LinkedIn account per AI sales agent",
-      "LinkedIn outreach execution and follow-up handling",
-      "Custom ICP and LinkedIn messaging strategy",
-      "Qualified lead list built based on your ICP",
-      "Weekly performance insights",
-      "1-on-1 onboarding & support",
+      "AI-powered LinkedIn outreach & automated follow-ups",
+      "Custom ICP strategy & message positioning",
+      "High-quality prospect list built to match your ICP",
+      "Automated multi-step follow-up sequences",
+      "Real-time reply routing to your dashboard",
+      "Weekly performance reporting & optimization",
+      "1-on-1 onboarding session",
       "Dedicated Success Manager"
     ]
   },
   multichannel_scale: {
     code: "multichannel_scale",
     label: "Plan 2 - Multi-Channel Scale",
-    badge: "LinkedIn + Cold Email",
     baseMonthly: 1350,
     additionalMonthly: 550,
     services: [
-      "2 AI sales agents included",
       "1 established LinkedIn account per AI sales agent",
       "2 dedicated email inboxes per AI sales agent",
-      "LinkedIn + cold email outreach with team handoff",
-      "Automated follow-up sequences",
-      "Designed for ~2,000 emails per agent per month when fully warmed",
-      "Custom ICP and messaging strategy",
-      "Weekly performance insights",
-      "1-on-1 onboarding & support",
+      "AI-powered LinkedIn + cold email outreach engine",
+      "Automated cross-channel follow-up sequences",
+      "Custom ICP-based messaging strategy",
+      "Real-time reply routing to your dashboard",
+      "Weekly performance reporting & optimization",
+      "1-on-1 onboarding session",
       "Dedicated Success Manager"
     ]
   }
@@ -268,10 +265,10 @@ const TrustedLogos = () => {
     <section className="relative w-full border-y border-white/5 py-16 overflow-hidden">
       {/* Subtle background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-teal/[0.02] via-transparent to-electric/[0.02] pointer-events-none" />
-      
+
       {/* Decorative glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-teal/5 blur-[100px] rounded-full pointer-events-none" />
-      
+
       <div className="relative z-10">
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 text-center mb-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-2">
@@ -285,7 +282,7 @@ const TrustedLogos = () => {
             Used by revenue, marketing, and founder-led teams in North America and beyond.
           </p>
         </div>
-        
+
         <div className="mt-12 relative">
           {/* Enhanced mask with smoother gradient */}
           <div className="[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
@@ -299,11 +296,11 @@ const TrustedLogos = () => {
                     >
                       {/* Logo container */}
                       <div className="relative h-full w-full rounded-2xl p-4">
-                        <Image 
-                          src={logo.src} 
-                          alt={`${logo.name} logo`} 
-                          fill 
-                          className="object-contain p-2" 
+                        <Image
+                          src={logo.src}
+                          alt={`${logo.name} logo`}
+                          fill
+                          className="object-contain p-2"
                           quality={100}
                           priority={false}
                           style={{ imageRendering: 'crisp-edges' }}
@@ -979,9 +976,6 @@ export default function HomePage() {
 
             <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-2">
               <div className="glass-panel relative flex h-full flex-col overflow-hidden rounded-[40px] border-teal/30 p-8 text-left shadow-glow">
-                <div className="inline-flex rounded-full border border-teal/40 bg-teal/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-teal">
-                  {PLAN_CONFIGS.linkedin_scale.badge}
-                </div>
                 <div className="mt-5 flex items-center gap-3 text-teal">
                   <ShieldCheck className="h-6 w-6" />
                   <span className="text-xl font-bold uppercase tracking-tight">
@@ -1045,9 +1039,6 @@ export default function HomePage() {
               </div>
 
               <div className="glass-panel relative flex h-full flex-col overflow-hidden rounded-[40px] border-teal/30 p-8 text-left shadow-glow">
-                <div className="inline-flex rounded-full border border-teal/40 bg-teal/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-teal">
-                  {PLAN_CONFIGS.multichannel_scale.badge}
-                </div>
                 <div className="mt-5 flex items-center gap-3 text-teal">
                   <ShieldCheck className="h-6 w-6" />
                   <span className="text-xl font-bold uppercase tracking-tight">
