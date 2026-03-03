@@ -1,12 +1,15 @@
 import type Stripe from "stripe";
 import { createServerSupabase } from "./supabase-admin";
 
+type PlanCode = "linkedin_scale" | "multichannel_scale";
+
 type ClientSubscriptionInsert = {
   client_id: string;
   client_email: string | null;
   stripe_customer_id: string;
   stripe_subscription_id: string;
   stripe_checkout_session_id: string;
+  plan_code: PlanCode | null;
   price_id: string;
   unit_price_cents: number | null;
   agents: number;
@@ -23,6 +26,8 @@ type ClientSubscriptionUpdate = {
   current_period_end: string;
   status: string;
   cancel_at_period_end: boolean;
+  plan_code: PlanCode | null;
+  agents: number;
 };
 
 function getSupabaseAdmin() {
@@ -31,6 +36,115 @@ function getSupabaseAdmin() {
 
 function toIsoFromUnixSeconds(value: number): string {
   return new Date(value * 1000).toISOString();
+}
+
+function parseMetadataAgents(value: string | undefined): number | null {
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) {
+    return null;
+  }
+  return parsed;
+}
+
+function parsePlanCode(value: string | undefined): PlanCode | null {
+  if (value === "linkedin_scale" || value === "multichannel_scale") {
+    return value;
+  }
+  return null;
+}
+
+function resolvePlanCodeFromItems(subscription: Stripe.Subscription): PlanCode | null {
+  const linkedinPriceIds = new Set(
+    [
+      process.env.PRICE_ID_LINKEDIN_BASE_2?.trim(),
+      process.env.PRICE_ID_LINKEDIN_ADDL_AGENT?.trim()
+    ].filter((value): value is string => Boolean(value))
+  );
+  const multichannelPriceIds = new Set(
+    [
+      process.env.PRICE_ID_MULTICHANNEL_BASE_2?.trim(),
+      process.env.PRICE_ID_MULTICHANNEL_ADDL_AGENT?.trim()
+    ].filter((value): value is string => Boolean(value))
+  );
+
+  for (const item of subscription.items.data) {
+    const priceId = item.price?.id?.trim();
+    if (!priceId) {
+      continue;
+    }
+    if (linkedinPriceIds.has(priceId)) {
+      return "linkedin_scale";
+    }
+    if (multichannelPriceIds.has(priceId)) {
+      return "multichannel_scale";
+    }
+  }
+
+  return null;
+}
+
+function resolvePlanCode(subscription: Stripe.Subscription): PlanCode | null {
+  const metadataPlan = parsePlanCode(subscription.metadata?.plan_code);
+  if (metadataPlan) {
+    return metadataPlan;
+  }
+  return resolvePlanCodeFromItems(subscription);
+}
+
+function resolveAgentsFromItems(subscription: Stripe.Subscription): number | null {
+  // Each base plan item includes 2 agents; additional line item quantity adds extra agents.
+  const BASE_INCLUDED_AGENTS = 2;
+  const basePriceIds = new Set(
+    [
+      process.env.PRICE_ID_LINKEDIN_BASE_2?.trim(),
+      process.env.PRICE_ID_MULTICHANNEL_BASE_2?.trim()
+    ].filter((value): value is string => Boolean(value))
+  );
+  const additionalPriceIds = new Set(
+    [
+      process.env.PRICE_ID_LINKEDIN_ADDL_AGENT?.trim(),
+      process.env.PRICE_ID_MULTICHANNEL_ADDL_AGENT?.trim()
+    ].filter((value): value is string => Boolean(value))
+  );
+
+  let hasBaseItem = false;
+  let additionalAgents = 0;
+
+  for (const item of subscription.items.data) {
+    const priceId = item.price?.id?.trim();
+    if (!priceId) {
+      continue;
+    }
+    if (basePriceIds.has(priceId)) {
+      hasBaseItem = true;
+      continue;
+    }
+    if (additionalPriceIds.has(priceId)) {
+      additionalAgents += item.quantity ?? 0;
+    }
+  }
+
+  if (!hasBaseItem) {
+    return null;
+  }
+
+  const totalAgents = BASE_INCLUDED_AGENTS + additionalAgents;
+  return Number.isInteger(totalAgents) && totalAgents >= BASE_INCLUDED_AGENTS ? totalAgents : null;
+}
+
+function resolveAgentCount(subscription: Stripe.Subscription): number {
+  const metadataAgents = parseMetadataAgents(subscription.metadata?.agents);
+  if (metadataAgents) {
+    return metadataAgents;
+  }
+
+  const derivedFromItems = resolveAgentsFromItems(subscription);
+  if (derivedFromItems) {
+    return derivedFromItems;
+  }
+
+  // Fallback for legacy subscriptions.
+  return subscription.items.data[0]?.quantity ?? 1;
 }
 
 function getPrimaryItem(subscription: Stripe.Subscription) {
@@ -75,6 +189,8 @@ export async function insertClientSubscriptionFromCheckout(input: {
   });
 
   const primaryItem = getPrimaryItem(input.stripeSubscription);
+  const planCode = resolvePlanCode(input.stripeSubscription);
+  const agents = resolveAgentCount(input.stripeSubscription);
   const effectiveBillingAnchor =
     input.stripeSubscription.trial_end ?? input.stripeSubscription.billing_cycle_anchor;
   const payload: ClientSubscriptionInsert = {
@@ -83,9 +199,10 @@ export async function insertClientSubscriptionFromCheckout(input: {
     stripe_customer_id: input.stripeCustomerId,
     stripe_subscription_id: input.stripeSubscription.id,
     stripe_checkout_session_id: input.checkoutSessionId,
+    plan_code: planCode,
     price_id: primaryItem.price.id,
     unit_price_cents: primaryItem.price.unit_amount ?? null,
-    agents: primaryItem.quantity ?? 1,
+    agents,
     currency: primaryItem.price.currency ?? "usd",
     // In this flow, trial_end is used as the first renewal anchor (Day 45).
     billing_cycle_anchor: toIsoFromUnixSeconds(effectiveBillingAnchor),
@@ -132,12 +249,16 @@ export async function updateClientSubscriptionFromStripeSubscription(
 ): Promise<void> {
   const supabase = getSupabaseAdmin();
   const primaryItem = getPrimaryItem(subscription);
+  const planCode = resolvePlanCode(subscription);
+  const agents = resolveAgentCount(subscription);
 
   const payload: ClientSubscriptionUpdate = {
     current_period_start: toIsoFromUnixSeconds(primaryItem.current_period_start),
     current_period_end: toIsoFromUnixSeconds(primaryItem.current_period_end),
     status: subscription.status,
-    cancel_at_period_end: Boolean(subscription.cancel_at_period_end)
+    cancel_at_period_end: Boolean(subscription.cancel_at_period_end),
+    plan_code: planCode,
+    agents
   };
 
   const updateResult = await supabase

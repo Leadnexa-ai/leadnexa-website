@@ -101,6 +101,7 @@ export async function sendPostCheckoutConfirmationEmail(
     recipient.split("@")[0] ||
     "there";
   const periodEnd = formatPeriodEnd(row.current_period_end ?? null);
+  const questionnaireUrl = "https://tally.so/r/xXaGdy";
   const onboardingUrl = "https://cal.com/team/leadnexa/on-boarding-meeting";
   const supportEmail = getSupportEmail();
   const teamRecipients = getTeamNotificationRecipients();
@@ -114,8 +115,8 @@ export async function sendPostCheckoutConfirmationEmail(
     `<p style=\"margin:0 0 16px 0;\">Current billing period ends on <strong>${periodEnd}</strong>.</p>`,
     "<p style=\"margin:0 0 8px 0;\"><strong>What happens next:</strong></p>",
     "<ol style=\"margin:0 0 16px 20px;padding:0;\">",
+    `<li>Please complete the onboarding questionnaire: <a href=\"${questionnaireUrl}\" style=\"color:#0ea5e9;\">${questionnaireUrl}</a></li>`,
     `<li>Please schedule your onboarding meeting here: <a href=\"${onboardingUrl}\" style=\"color:#0ea5e9;\">${onboardingUrl}</a></li>`,
-    "<li>During the onboarding meeting, our team will walk you through all next steps and setup details.</li>",
     "</ol>",
     `<p style=\"margin:0;\">Need help? Reply to this email or contact <a href=\"mailto:${supportEmail}\" style=\"color:#0ea5e9;\">${supportEmail}</a>.</p>`,
     "</div>"
@@ -128,8 +129,8 @@ export async function sendPostCheckoutConfirmationEmail(
     `Current billing period ends on ${periodEnd}.`,
     "",
     "Next steps:",
-    `1) Please schedule your onboarding meeting: ${onboardingUrl}`,
-    "2) During the onboarding meeting, our team will walk you through all next steps and setup details.",
+    `1) Please complete the onboarding questionnaire: ${questionnaireUrl}`,
+    `2) Please schedule your onboarding meeting: ${onboardingUrl}`,
     "",
     `Support: ${supportEmail}`
   ].join("\n");
