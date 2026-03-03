@@ -152,7 +152,7 @@ const comparison = {
 };
 
 const comparisonRows = [
-  { label: "Monthly cost", traditional: "$6k-$9k per SDR", ai: "From $3.5k for 5 AI seats" },
+  { label: "Monthly cost", traditional: "$6k-$9k per SDR", ai: "From $1.65k for 5 AI seats" },
   { label: "Time to productivity", traditional: "60-90 days", ai: "4-14 days" },
   { label: "Working hours", traditional: "40 hrs/week", ai: "168 hrs/week" },
   { label: "Daily outreach", traditional: "40-60 contacts", ai: "300-500 contacts" },
@@ -1038,7 +1038,7 @@ export default function HomePage() {
                 Common Questions
               </h2>
               <p className="text-white/60 text-lg">
-                Watch our videos and get clear answers on deliverability, ramp time, and how the agents work.
+                Get clear answers on deliverability, pricing, ramp time, and how the agents work.
               </p>
             </div>
 
@@ -1078,8 +1078,8 @@ export default function HomePage() {
                   },
                   {
                     q: "What are the key advantages of AI agents over traditional SDRs?",
-                    a: "Agents cost less (from $3,500 for 5 vs. $6k-9k per SDR), ramp faster (4-14 days vs. 60-90), work 24/7 (168+ hrs/week), reach 300-500 contacts daily, require near-zero management, and deliver consistent results.",
-                    videoPath: "/videos/ai-vs-sdr-advantages.mp4",
+                    a: "Agents cost less (from $750 for 2 vs. $6k-9k per SDR), ramp faster (4-14 days vs. 60-90), work 24/7 (168+ hrs/week), reach 300-500 contacts daily, require near-zero management, and deliver consistent results.",
+                    videoPath: "/LeadNexa vs Traditional Sales Reps_ Simple Comparison_1080p.mp4",
                     videoTitle: "AI Agents vs Traditional SDRs"
                   },
                   {
@@ -1103,7 +1103,7 @@ export default function HomePage() {
                   {
                     q: "How do Leadnexa AI agents replace traditional sales team?",
                     a: "Unlike a traditional sales team that manually searches for leads, sends outreach messages, and tracks follow-ups, LeadNexa's AI automates these tasks at scale. The AI:\n• Identifies and qualifies high-potential prospects automatically\n• Sends personalized outreach and follow-ups without human delay\n• Classifies prospect intent so your team can filter and engage with only interested leads",
-                    videoPath: "/videos/ai-workflows.mp4",
+                    videoPath: "/LeadNexa AI_ Smarter Prospecting_1080p.mp4",
                     videoTitle: "AI Agent Workflows"
                   },
                   {
@@ -1172,7 +1172,7 @@ export default function HomePage() {
                   },
                   {
                     q: "Do you offer volume discounts?",
-                    a: "Yes! Pricing decreases as you add more agents:\n• 6-10 agents: $700 each\n• 11-20 agents: $650 each\n• 21+ agents: $600 each\n\nEnterprise plans available.",
+                    a: "We offer transparent flat-rate pricing:\n• LinkedIn Scale: $750 for 2 agents, then $300 per additional agent\n• Multi-Channel Scale: $1,350 for 2 agents, then $550 per additional agent\n• Get 25% off your first month\n\nFor teams needing 30+ agents, contact us for custom enterprise pricing.",
                     videoPath: "/videos/volume-pricing.mp4",
                     videoTitle: "Volume Discounts"
                   }
@@ -1181,6 +1181,7 @@ export default function HomePage() {
 
               const currentFaqs = faqData[faqCategory as keyof typeof faqData] || faqData.general;
               const currentFaq = currentFaqs[expandedFaq] || currentFaqs[0];
+              const isPricingCategory = faqCategory === "pricing";
 
               return (
                 <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-start">
@@ -1203,9 +1204,15 @@ export default function HomePage() {
                                 <div className={`flex items-center justify-center w-7 h-7 rounded-full transition-colors ${
                                   expandedFaq === index ? 'bg-teal/20' : 'bg-white/5'
                                 }`}>
-                                  <Video className={`w-3.5 h-3.5 transition-colors ${
-                                    expandedFaq === index ? 'text-teal' : 'text-white/40'
-                                  }`} />
+                                  {isPricingCategory ? (
+                                    <BarChart3 className={`w-3.5 h-3.5 transition-colors ${
+                                      expandedFaq === index ? 'text-teal' : 'text-white/40'
+                                    }`} />
+                                  ) : (
+                                    <Video className={`w-3.5 h-3.5 transition-colors ${
+                                      expandedFaq === index ? 'text-teal' : 'text-white/40'
+                                    }`} />
+                                  )}
                                 </div>
                                 <h3 className={`text-sm font-semibold transition-colors ${
                                   expandedFaq === index ? 'text-white' : 'text-white/80'
@@ -1213,25 +1220,79 @@ export default function HomePage() {
                                   {item.q}
                                 </h3>
                               </div>
-                              <div className={`overflow-hidden transition-all duration-300 ${
-                                expandedFaq === index ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
-                              }`}>
-                                {renderFaqAnswer(item.a)}
-                              </div>
+                              {!isPricingCategory && (
+                                <div className={`overflow-hidden transition-all duration-300 ${
+                                  expandedFaq === index ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
+                                }`}>
+                                  {renderFaqAnswer(item.a)}
+                                </div>
+                              )}
                             </div>
-                            <ChevronDown 
-                              className={`w-4 h-4 text-teal shrink-0 mt-1 transition-transform duration-300 ${
-                                expandedFaq === index ? 'rotate-180' : ''
-                              }`}
-                            />
+                            {!isPricingCategory && (
+                              <ChevronDown 
+                                className={`w-4 h-4 text-teal shrink-0 mt-1 transition-transform duration-300 ${
+                                  expandedFaq === index ? 'rotate-180' : ''
+                                }`}
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
 
-                  {/* Video Player */}
-                  <VideoPlayer videoPath={currentFaq.videoPath} videoTitle={currentFaq.videoTitle} />
+                  {/* Right Panel - Video or Answer */}
+                  {isPricingCategory ? (
+                    <div className="sticky top-24">
+                      <div className="glass-panel rounded-3xl overflow-hidden border-teal/30 bg-ink/60 shadow-[0_0_60px_rgba(45,212,191,0.1)]">
+                        <div className="p-8">
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-teal/20 flex items-center justify-center">
+                              <BarChart3 className="h-6 w-6 text-teal" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-bold text-white">{currentFaq.q}</h3>
+                              <p className="text-xs text-white/50 uppercase tracking-[0.2em]">Pricing Details</p>
+                            </div>
+                          </div>
+                          <div className="space-y-4 text-white/80 leading-relaxed">
+                            {currentFaq.a.split('\n').map((line, i) => {
+                              if (line.trim().startsWith('•')) {
+                                return (
+                                  <div key={i} className="flex items-start gap-3 py-2">
+                                    <div className="mt-1.5 rounded-full bg-teal/20 p-1">
+                                      <Check className="h-3 w-3 text-teal" />
+                                    </div>
+                                    <span className="text-sm">{line.replace(/^[•\s]+/, '').trim()}</span>
+                                  </div>
+                                );
+                              } else if (line.trim()) {
+                                return (
+                                  <p key={i} className="text-sm leading-relaxed">
+                                    {line.trim()}
+                                  </p>
+                                );
+                              }
+                              return null;
+                            })}
+                          </div>
+                        </div>
+                        <div className="px-8 pb-8">
+                          <div className="rounded-2xl bg-teal/10 border border-teal/30 p-5">
+                            <div className="flex items-center gap-2 mb-3">
+                              <ShieldCheck className="w-5 h-5 text-teal" />
+                              <span className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">Flexible Terms</span>
+                            </div>
+                            <p className="text-xs text-white/60 leading-relaxed">
+                              No long-term contracts required. 14-day free trial available. Cancel anytime with 30 days notice.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <VideoPlayer videoPath={currentFaq.videoPath} videoTitle={currentFaq.videoTitle} />
+                  )}
                 </div>
               );
             })()}
