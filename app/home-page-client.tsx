@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SiteHeader from "./components/site-header";
@@ -21,6 +21,9 @@ import {
   Bot,
   Activity,
   Star,
+  ChevronDown,
+  Play,
+  Video,
 } from "lucide-react";
 
 // --- Data Definitions ---
@@ -389,10 +392,117 @@ const UIMockup = () => (
   </div>
 );
 
+const renderFaqAnswer = (answer: string) => {
+  const lines = answer.split('\n');
+  const elements: JSX.Element[] = [];
+  let bulletPoints: string[] = [];
+  let currentText = '';
+
+  lines.forEach((line, index) => {
+    if (line.trim().startsWith('•')) {
+      if (currentText) {
+        elements.push(
+          <p key={`text-${elements.length}`} className="text-xs text-white/70 leading-relaxed mb-3">
+            {currentText}
+          </p>
+        );
+        currentText = '';
+      }
+      bulletPoints.push(line.replace(/^[•\s]+/, '').trim());
+    } else if (line.trim()) {
+      if (bulletPoints.length > 0) {
+        elements.push(
+          <ul key={`list-${elements.length}`} className="space-y-2 mb-3">
+            {bulletPoints.map((point, i) => (
+              <li key={i} className="flex items-start gap-2 text-xs text-white/70 leading-relaxed">
+                <span className="text-teal mt-0.5 shrink-0">•</span>
+                <span>{point}</span>
+              </li>
+            ))}
+          </ul>
+        );
+        bulletPoints = [];
+      }
+      currentText += (currentText ? ' ' : '') + line.trim();
+    }
+  });
+
+  if (currentText) {
+    elements.push(
+      <p key={`text-${elements.length}`} className="text-xs text-white/70 leading-relaxed mb-3">
+        {currentText}
+      </p>
+    );
+  }
+
+  if (bulletPoints.length > 0) {
+    elements.push(
+      <ul key={`list-${elements.length}`} className="space-y-2 mb-3">
+        {bulletPoints.map((point, i) => (
+          <li key={i} className="flex items-start gap-2 text-xs text-white/70 leading-relaxed">
+            <span className="text-teal mt-0.5 shrink-0">•</span>
+            <span>{point}</span>
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <div className="pl-9">{elements}</div>;
+};
+
+const VideoPlayer = ({ videoPath, videoTitle }: { videoPath: string; videoTitle: string }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
+  }, [videoPath]);
+
+  return (
+    <div className="sticky top-24">
+      <div className="glass-panel rounded-3xl overflow-hidden border-teal/30 bg-ink/60 shadow-[0_0_60px_rgba(45,212,191,0.1)]">
+        <div className="aspect-video relative bg-ink/80 overflow-hidden">
+          <video
+            ref={videoRef}
+            key={videoPath}
+            className="absolute inset-0 w-full h-full object-cover"
+            controls
+            playsInline
+            preload="metadata"
+          >
+            <source src={videoPath} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <div className="p-6 border-t border-white/5">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-teal/20">
+              <Play className="w-5 h-5 text-teal fill-teal" />
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">Now Playing</p>
+              <p className="text-sm text-white/80 font-medium mt-0.5">
+                {videoTitle}
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-white/50 leading-relaxed">
+            Click any question on the left to watch its corresponding video explanation. Use tabs above to browse by category.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [agentCount, setAgentCount] = useState<number>(getInitialAgentCount);
+  const [expandedFaq, setExpandedFaq] = useState<number>(0);
+  const [faqCategory, setFaqCategory] = useState<string>("general");
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
 
   const unitPrice =
@@ -848,41 +958,210 @@ export default function HomePage() {
           )}
 
           {/* FAQ */}
-          <motion.section {...motionProps} className="mx-auto max-w-7xl px-6 py-32">
+          <motion.section {...motionProps} className="scroll-mt-28 mx-auto max-w-7xl px-6 py-32" id="faq">
             <div className="mb-12 text-center max-w-3xl mx-auto">
               <p className="text-xs font-semibold tracking-[0.3em] text-teal mb-4">FAQ</p>
               <h2 className="text-4xl font-bold tracking-tight text-white md:text-5xl mb-4">
                 Common Questions
               </h2>
               <p className="text-white/60 text-lg">
-                Clear answers on deliverability, ramp time, and how the agents work.
+                Watch our videos and get clear answers on deliverability, ramp time, and how the agents work.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
+
+            {/* Category Tabs */}
+            <div className="flex flex-wrap justify-center gap-3 mb-10">
               {[
-                {
-                  q: "How do you protect deliverability?",
-                  a: "We protect deliverability through gradual warm-up, controlled sending volumes, and continuous engagement monitoring — ensuring long-term sender reputation."
-                },
-                {
-                  q: "How fast can we go live?",
-                  a: "Most teams launch in 4-14 days after a kickoff and ICP alignment call."
-                },
-                {
-                  q: "What does the AI agent handle vs. our team?",
-                  a: "Our AI agents handle prospecting, personalized outreach, and follow-ups. Once a prospect shows interest, the conversation is handed off to your team to take over."
-                },
-                {
-                  q: "Do you write and optimize messaging?",
-                  a: "Yes. We create and test multi-variant outbound messaging, optimizing based on engagement signals and campaign performance."
-                }
-              ].map((item) => (
-                <div key={item.q} className="glass-panel rounded-3xl p-6 border-white/10">
-                  <p className="text-sm font-semibold text-white mb-2">{item.q}</p>
-                  <p className="text-sm text-white/60 leading-relaxed">{item.a}</p>
-                </div>
+                { id: "general", label: "General", icon: Sparkles },
+                { id: "howitworks", label: "How It Works", icon: Activity },
+                { id: "pricing", label: "Pricing & Plans", icon: BarChart3 }
+              ].map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => {
+                    setFaqCategory(category.id);
+                    setExpandedFaq(0);
+                  }}
+                  className={`group flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                    faqCategory === category.id
+                      ? "bg-teal text-ink shadow-[0_0_30px_rgba(45,212,191,0.3)]"
+                      : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white border border-white/10"
+                  }`}
+                >
+                  <category.icon className="w-4 h-4" />
+                  {category.label}
+                </button>
               ))}
             </div>
+            
+            {(() => {
+              const faqData = {
+                general: [
+                  {
+                    q: "What is Leadnexa?",
+                    a: "Leadnexa provides AI sales agents that act as an always-on SDR team, generating qualified B2B leads and meetings without hiring traditional staff.",
+                    videoPath: "/what-is-leadnexa.mp4",
+                    videoTitle: "What is Leadnexa"
+                  },
+                  {
+                    q: "What are the key advantages of AI agents over traditional SDRs?",
+                    a: "Agents cost less (from $3,500 for 5 vs. $6k-9k per SDR), ramp faster (4-14 days vs. 60-90), work 24/7 (168+ hrs/week), reach 300-500 contacts daily, require near-zero management, and deliver consistent results.",
+                    videoPath: "/videos/ai-vs-sdr-advantages.mp4",
+                    videoTitle: "AI Agents vs Traditional SDRs"
+                  },
+                  {
+                    q: "What types of B2B companies benefit most from Leadnexa?",
+                    a: "Companies with significant deal sizes needing systematic outbound to supplement or replace prospecting, where teams can close qualified conversations handed off by the agents.",
+                    videoPath: "/videos/best-fit-companies.mp4",
+                    videoTitle: "Best Fit Companies"
+                  },
+                  {
+                    q: "How long does it take to launch Leadnexa campaigns?",
+                    a: "Launch in 4-14 days after choosing package, submitting onboarding questionnaire, and kickoff strategy call.",
+                    videoPath: "/videos/launch-process.mp4",
+                    videoTitle: "Quick Launch Process"
+                  },
+                  {
+                    q: "Is Leadnexa customizable for my brand?",
+                    a: "Yes, LinkedIn profiles are customized with headlines, banners, and summaries aligned to your business and ICP.",
+                    videoPath: "/videos/brand-customization.mp4",
+                    videoTitle: "Brand Customization"
+                  },
+                  {
+                    q: "How do Leadnexa AI agents replace traditional sales team?",
+                    a: "Unlike a traditional sales team that manually searches for leads, sends outreach messages, and tracks follow-ups, LeadNexa's AI automates these tasks at scale. The AI:\n• Identifies and qualifies high-potential prospects automatically\n• Sends personalized outreach and follow-ups without human delay\n• Classifies prospect intent so your team can filter and engage with only interested leads",
+                    videoPath: "/videos/ai-workflows.mp4",
+                    videoTitle: "AI Agent Workflows"
+                  },
+                  {
+                    q: "Do you write and optimize messaging?",
+                    a: "Yes. We create and test multi-variant outbound messaging, optimizing based on engagement signals and campaign performance.",
+                    videoPath: "/videos/messaging-optimization.mp4",
+                    videoTitle: "Message Optimization"
+                  }
+                ],
+                howitworks: [
+                  {
+                    q: "How does LinkedIn outreach work with Leadnexa agents?",
+                    a: "Agents build ICP-aligned lead lists, optimize and warm profiles, send personalized connects (up to 500/month per agent) with smart follow-ups, and route high-intent replies to your team.",
+                    videoPath: "/videos/linkedin-outreach.mp4",
+                    videoTitle: "LinkedIn Outreach Process"
+                  },
+                  {
+                    q: "What is the process for cold email campaigns?",
+                    a: "Agents build enriched ICP lists, write personalized sequences with follow-ups, execute safe outreach (up to 2,000 emails/month per agent once warmed), monitor deliverability, and route interested replies.",
+                    videoPath: "/videos/cold-email-campaigns.mp4",
+                    videoTitle: "Cold Email Campaigns"
+                  },
+                  {
+                    q: "How does Leadnexa handle replies and lead handoff?",
+                    a: "Agents flag interested replies via intent routing, qualify them, and hand off high-intent leads to your team for closing, with continuous campaign optimization.",
+                    videoPath: "/videos/reply-handoff.mp4",
+                    videoTitle: "Reply & Lead Handoff"
+                  },
+                  {
+                    q: "How does Leadnexa ensure LinkedIn account safety?",
+                    a: "Leadnexa provides and manages high-quality accounts with brand positioning, ICP-aligned profiles, health checks, safe daily limits, and consistent outreach practices.",
+                    videoPath: "/videos/linkedin-safety.mp4",
+                    videoTitle: "LinkedIn Account Safety"
+                  },
+                  {
+                    q: "How do you protect deliverability?",
+                    a: "We protect deliverability through gradual warm-up, controlled sending volumes, and continuous engagement monitoring — ensuring long-term sender reputation.",
+                    videoPath: "/videos/deliverability.mp4",
+                    videoTitle: "Deliverability Protection"
+                  },
+                  {
+                    q: "What volume can one AI sales agent handle monthly?",
+                    a: "One agent manages 1 LinkedIn account for 500 connects, 2 email inboxes for 2,000 emails, with scaling via additional agents.",
+                    videoPath: "/videos/agent-volume.mp4",
+                    videoTitle: "Agent Volume Capacity"
+                  },
+                  {
+                    q: "How does scaling agents work for larger outreach?",
+                    a: "Scale from 1-30 agents with volume pricing; e.g.:\n• 5 agents: 5 accounts, 2.5k connects, 10k emails\n• 20 agents: 20 accounts, 10k connects, 40k emails",
+                    videoPath: "/videos/scaling-agents.mp4",
+                    videoTitle: "Scaling Agents"
+                  }
+                ],
+                pricing: [
+                  {
+                    q: "What's included in each agent subscription?",
+                    a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager",
+                    videoPath: "/videos/pricing-details.mp4",
+                    videoTitle: "Pricing Breakdown"
+                  },
+                  {
+                    q: "Can I cancel anytime?",
+                    a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers.",
+                    videoPath: "/videos/trial-cancellation.mp4",
+                    videoTitle: "Trial & Cancellation"
+                  },
+                  {
+                    q: "Do you offer volume discounts?",
+                    a: "Yes! Pricing decreases as you add more agents:\n• 6-10 agents: $700 each\n• 11-20 agents: $650 each\n• 21+ agents: $600 each\n\nEnterprise plans available.",
+                    videoPath: "/videos/volume-pricing.mp4",
+                    videoTitle: "Volume Discounts"
+                  }
+                ]
+              };
+
+              const currentFaqs = faqData[faqCategory as keyof typeof faqData] || faqData.general;
+              const currentFaq = currentFaqs[expandedFaq] || currentFaqs[0];
+
+              return (
+                <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-start">
+                  {/* FAQ Accordion */}
+                  <div className="space-y-3 max-h-[700px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-teal/20 scrollbar-track-transparent">
+                    {currentFaqs.map((item, index) => (
+                      <div 
+                        key={item.q} 
+                        className={`glass-panel rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer ${
+                          expandedFaq === index 
+                            ? 'border-teal/50 bg-teal/5 shadow-[0_0_30px_rgba(45,212,191,0.15)]' 
+                            : 'border-white/10 hover:border-teal/30'
+                        }`}
+                        onClick={() => setExpandedFaq(index)}
+                      >
+                        <div className="p-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2.5 mb-2">
+                                <div className={`flex items-center justify-center w-7 h-7 rounded-full transition-colors ${
+                                  expandedFaq === index ? 'bg-teal/20' : 'bg-white/5'
+                                }`}>
+                                  <Video className={`w-3.5 h-3.5 transition-colors ${
+                                    expandedFaq === index ? 'text-teal' : 'text-white/40'
+                                  }`} />
+                                </div>
+                                <h3 className={`text-sm font-semibold transition-colors ${
+                                  expandedFaq === index ? 'text-white' : 'text-white/80'
+                                }`}>
+                                  {item.q}
+                                </h3>
+                              </div>
+                              <div className={`overflow-hidden transition-all duration-300 ${
+                                expandedFaq === index ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
+                              }`}>
+                                {renderFaqAnswer(item.a)}
+                              </div>
+                            </div>
+                            <ChevronDown 
+                              className={`w-4 h-4 text-teal shrink-0 mt-1 transition-transform duration-300 ${
+                                expandedFaq === index ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Video Player */}
+                  <VideoPlayer videoPath={currentFaq.videoPath} videoTitle={currentFaq.videoTitle} />
+                </div>
+              );
+            })()}
           </motion.section>
 
           {/* Pricing Section */}
