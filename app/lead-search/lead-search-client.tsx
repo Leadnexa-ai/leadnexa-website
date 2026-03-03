@@ -4,12 +4,11 @@ import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 
 type LeadSearchFormState = {
-  industry: string;
-  targetRegions: string;
-  jobTitles: string;
-  companySizeRanges: string;
-  keywordsInclude: string;
-  keywordsExclude: string;
+  companyName: string;
+  companyWebsite: string;
+  productDescription: string;
+  targetMarkets: string;
+  exclusions: string;
 };
 
 type PreviewLead = {
@@ -23,8 +22,8 @@ type PreviewLead = {
 type RunResponse = {
   quota: {
     used_today: number;
-    limit: number;
-    remaining: number;
+    limit: number | null;
+    remaining: number | null;
   };
   applied_filters: {
     person_titles?: string[];
@@ -44,12 +43,11 @@ type RunResponse = {
 };
 
 const INITIAL_FORM: LeadSearchFormState = {
-  industry: "",
-  targetRegions: "",
-  jobTitles: "",
-  companySizeRanges: "",
-  keywordsInclude: "",
-  keywordsExclude: ""
+  companyName: "",
+  companyWebsite: "",
+  productDescription: "",
+  targetMarkets: "",
+  exclusions: ""
 };
 
 function parseMultiValueInput(value: string): string[] {
@@ -70,6 +68,9 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
     if (!result) {
       return "Daily usage limit: 3 snapshots";
     }
+    if (result.quota.limit === null) {
+      return `Daily usage: ${result.quota.used_today} (unlimited for this account)`;
+    }
     return `Daily usage: ${result.quota.used_today}/${result.quota.limit} (remaining ${result.quota.remaining})`;
   }, [result]);
 
@@ -86,12 +87,11 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          industry: form.industry,
-          target_regions: parseMultiValueInput(form.targetRegions),
-          job_titles: parseMultiValueInput(form.jobTitles),
-          company_size_ranges: parseMultiValueInput(form.companySizeRanges),
-          keywords_include: parseMultiValueInput(form.keywordsInclude),
-          keywords_exclude: parseMultiValueInput(form.keywordsExclude)
+          company_name: form.companyName,
+          company_website: form.companyWebsite,
+          product_description: form.productDescription,
+          target_markets: parseMultiValueInput(form.targetMarkets),
+          exclusions: parseMultiValueInput(form.exclusions)
         })
       });
       const payload = (await response.json().catch(() => ({}))) as Partial<RunResponse> & {
@@ -153,59 +153,50 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
             className="rounded-3xl border border-white/15 bg-slate-900/60 p-6 shadow-[0_20px_80px_rgba(2,6,23,0.5)] backdrop-blur-md"
           >
             <h2 className="text-xl font-semibold">AI Questionnaire</h2>
-            <p className="mt-1 text-sm text-slate-300">6 quick inputs to generate your snapshot filters.</p>
+            <p className="mt-1 text-sm text-slate-300">Share your company context. AI will generate targeting filters for you.</p>
 
-            <label className="mt-5 block text-sm font-medium text-slate-200">Industry</label>
+            <label className="mt-5 block text-sm font-medium text-slate-200">Company name</label>
             <input
               required
-              value={form.industry}
-              onChange={(event) => setForm((prev) => ({ ...prev, industry: event.target.value }))}
+              value={form.companyName}
+              onChange={(event) => setForm((prev) => ({ ...prev, companyName: event.target.value }))}
               className="mt-2 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="e.g. B2B SaaS"
+              placeholder="e.g. LeadNexa"
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Target regions</label>
-            <textarea
-              value={form.targetRegions}
-              onChange={(event) => setForm((prev) => ({ ...prev, targetRegions: event.target.value }))}
-              className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="North America, United Kingdom"
+            <label className="mt-4 block text-sm font-medium text-slate-200">Company website</label>
+            <input
+              value={form.companyWebsite}
+              onChange={(event) => setForm((prev) => ({ ...prev, companyWebsite: event.target.value }))}
+              className="mt-2 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
+              placeholder="https://yourcompany.com"
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Job titles</label>
+            <label className="mt-4 block text-sm font-medium text-slate-200">What do you sell? (one short paragraph)</label>
             <textarea
               required
-              value={form.jobTitles}
-              onChange={(event) => setForm((prev) => ({ ...prev, jobTitles: event.target.value }))}
+              value={form.productDescription}
+              onChange={(event) => setForm((prev) => ({ ...prev, productDescription: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="VP Sales, Head of Growth, Founder"
+              placeholder="e.g. We help B2B companies automate outbound and book qualified meetings."
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Company size ranges</label>
-            <input
-              value={form.companySizeRanges}
-              onChange={(event) => setForm((prev) => ({ ...prev, companySizeRanges: event.target.value }))}
-              className="mt-2 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="11-50, 51-200"
-              disabled={isPendingSession || isLoading}
-            />
-
-            <label className="mt-4 block text-sm font-medium text-slate-200">Include keywords</label>
+            <label className="mt-4 block text-sm font-medium text-slate-200">Target market hints (optional)</label>
             <textarea
-              value={form.keywordsInclude}
-              onChange={(event) => setForm((prev) => ({ ...prev, keywordsInclude: event.target.value }))}
+              value={form.targetMarkets}
+              onChange={(event) => setForm((prev) => ({ ...prev, targetMarkets: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="outbound, demand generation, pipeline"
+              placeholder="North America, B2B SaaS, Seed to Series B"
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Exclude keywords</label>
+            <label className="mt-4 block text-sm font-medium text-slate-200">Exclusions (optional)</label>
             <textarea
-              value={form.keywordsExclude}
-              onChange={(event) => setForm((prev) => ({ ...prev, keywordsExclude: event.target.value }))}
+              value={form.exclusions}
+              onChange={(event) => setForm((prev) => ({ ...prev, exclusions: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
               placeholder="agency, freelancer"
               disabled={isPendingSession || isLoading}

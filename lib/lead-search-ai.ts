@@ -1,12 +1,11 @@
 import type { ApolloPeopleSearchFilters } from "./apollo";
 
 export type LeadSearchQuestionnaire = {
-  industry: string;
-  target_regions: string[];
-  job_titles: string[];
-  company_size_ranges: string[];
-  keywords_include: string[];
-  keywords_exclude: string[];
+  company_name: string;
+  company_website: string;
+  product_description: string;
+  target_markets: string[];
+  exclusions: string[];
 };
 
 type AiFilterOutput = {
@@ -17,7 +16,7 @@ type AiFilterOutput = {
 };
 
 const MAX_LIST_ITEMS = 10;
-const MAX_KEYWORD_LENGTH = 240;
+const MAX_KEYWORD_LENGTH = 280;
 
 function sanitizeStringList(input: unknown, maxItems: number): string[] {
   if (!Array.isArray(input)) {
@@ -44,13 +43,13 @@ function trimKeywordText(value: string): string {
 function buildKeywordText(input: LeadSearchQuestionnaire): string {
   const parts: string[] = [];
 
-  if (input.industry) {
-    parts.push(input.industry);
+  if (input.product_description) {
+    parts.push(input.product_description);
   }
-  for (const keyword of input.keywords_include) {
+  for (const keyword of input.target_markets) {
     parts.push(keyword);
   }
-  for (const keyword of input.keywords_exclude) {
+  for (const keyword of input.exclusions) {
     parts.push(`-${keyword}`);
   }
 
@@ -67,19 +66,18 @@ function normalizeFilterOutput(input: AiFilterOutput, fallback: LeadSearchQuesti
       : buildKeywordText(fallback);
 
   return {
-    person_titles: personTitles.length > 0 ? personTitles : fallback.job_titles,
-    person_locations: personLocations.length > 0 ? personLocations : fallback.target_regions,
-    organization_num_employees_ranges:
-      employeeRanges.length > 0 ? employeeRanges : fallback.company_size_ranges,
+    person_titles: personTitles,
+    person_locations: personLocations,
+    organization_num_employees_ranges: employeeRanges,
     q_keywords: qKeywords
   };
 }
 
 function buildFallbackFilters(input: LeadSearchQuestionnaire): ApolloPeopleSearchFilters {
   return {
-    person_titles: input.job_titles,
-    person_locations: input.target_regions,
-    organization_num_employees_ranges: input.company_size_ranges,
+    person_titles: [],
+    person_locations: [],
+    organization_num_employees_ranges: [],
     q_keywords: buildKeywordText(input)
   };
 }
@@ -109,6 +107,8 @@ export async function generateApolloFilters(
 
   const system = [
     "You convert a B2B market questionnaire into Apollo people search filters.",
+    "The questionnaire contains only company context. Infer relevant targeting.",
+    "Prefer practical B2B buyer titles and target regions from the provided context.",
     "Return JSON only with keys:",
     "person_titles: string[]",
     "person_locations: string[]",
