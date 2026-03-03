@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import type { PlanCode } from "../../../lib/leadnexa-pricing";
 
 export const metadata: Metadata = {
   title: "Checkout Canceled",
@@ -15,21 +16,30 @@ export const metadata: Metadata = {
 
 type CheckoutCancelPageProps = {
   searchParams?: {
+    plan?: string;
     agents?: string;
   };
 };
 
+function parsePlan(value?: string): PlanCode {
+  if (value === "linkedin_scale" || value === "multichannel_scale") {
+    return value;
+  }
+  return "multichannel_scale";
+}
+
 function parseAgents(value?: string): number | null {
   const parsed = Number(value);
-  if (!Number.isInteger(parsed) || parsed < 3 || parsed > 30) {
+  if (!Number.isInteger(parsed) || parsed < 2 || parsed > 30) {
     return null;
   }
   return parsed;
 }
 
 export default function CheckoutCancelPage({ searchParams }: CheckoutCancelPageProps) {
+  const plan = parsePlan(searchParams?.plan);
   const agents = parseAgents(searchParams?.agents);
-  const retryHref = agents ? `/?agents=${agents}#pricing` : "/#pricing";
+  const retryHref = agents ? `/?plan=${plan}&agents=${agents}#pricing` : `/?plan=${plan}#pricing`;
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-slate-950 text-white">

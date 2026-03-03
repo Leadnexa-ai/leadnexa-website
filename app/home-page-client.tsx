@@ -82,36 +82,55 @@ const steps = [
   }
 ];
 
-// const pricingServices = [
-//   "1 established LinkedIn account per AI sales agent",
-//   "Email & LinkedIn outreach done for you",
-//   "Unlimited email campaigns",
-//   "High-volume cold email delivery",
-//   "Thousands of follow-up messages",
-//   "Custom ICP & messaging strategy",
-//   "Qualified lead list built",
-//   "1-on-1 onboarding & support",
-//   "Weekly performance insights",
-//   "Dedicated Success Manager"
-// ];
+type PlanCode = "linkedin_scale" | "multichannel_scale";
 
-const pricingServices = [
-  "1 established LinkedIn account per AI sales agent",
-  "2 dedicated email inboxes per AI sales agent",
+type PlanConfig = {
+  code: PlanCode;
+  label: string;
+  baseMonthly: number;
+  additionalMonthly: number;
+  services: string[];
+};
 
-  "Email & LinkedIn outreach with team handoff",
-  "Flexible outbound campaign setup",
-  "Automated follow-up sequences",
-  "Scalable cold email delivery",
-  "Designed for ~2,000 emails per agent per month when fully warmed",
+const MIN_AGENTS = 2;
+const MAX_AGENTS = 30;
 
-  "Custom ICP & messaging strategy",
-  "Qualified lead list built based on your ICP",
-
-  "Weekly performance insights",
-  "1-on-1 onboarding & support",
-  "Dedicated Success Manager"
-];
+const PLAN_CONFIGS: Record<PlanCode, PlanConfig> = {
+  linkedin_scale: {
+    code: "linkedin_scale",
+    label: "Plan 1 - LinkedIn Scaling",
+    baseMonthly: 750,
+    additionalMonthly: 300,
+    services: [
+      "1 established LinkedIn account per AI sales agent",
+      "AI-powered LinkedIn outreach & automated follow-ups",
+      "Custom ICP strategy & message positioning",
+      "High-quality prospect list built to match your ICP",
+      "Automated multi-step follow-up sequences",
+      "Real-time reply routing to your dashboard",
+      "Weekly performance reporting & optimization",
+      "1-on-1 onboarding session",
+      "Dedicated Success Manager"
+    ]
+  },
+  multichannel_scale: {
+    code: "multichannel_scale",
+    label: "Plan 2 - Multi-Channel Scaling",
+    baseMonthly: 1350,
+    additionalMonthly: 550,
+    services: [
+      "1 established LinkedIn account per AI sales agent",
+      "2 dedicated email inboxes per AI sales agent",
+      "AI-powered LinkedIn + cold email outreach engine",
+      "Automated cross-channel follow-up sequences",
+      "Custom ICP-based messaging strategy",
+      "Real-time reply routing to your dashboard",
+      "Weekly performance reporting & optimization",
+      "1-on-1 onboarding session",
+      "Dedicated Success Manager"
+    ]
+  }
+};
 
 
 
@@ -201,18 +220,37 @@ const motionProps = {
   viewport: { once: true, amount: 0.2 }
 };
 
-function getInitialAgentCount(): number {
+function isPlanCode(value: string | null): value is PlanCode {
+  return value === "linkedin_scale" || value === "multichannel_scale";
+}
+
+function getInitialPlan(): PlanCode {
   if (typeof window === "undefined") {
-    return 5;
+    return "multichannel_scale";
+  }
+
+  const rawPlan = new URLSearchParams(window.location.search).get("plan");
+  return isPlanCode(rawPlan) ? rawPlan : "multichannel_scale";
+}
+
+function getInitialAgentsFromQuery(): number {
+  if (typeof window === "undefined") {
+    return MIN_AGENTS;
   }
 
   const rawValue = new URLSearchParams(window.location.search).get("agents");
   const parsed = Number(rawValue);
-  if (!Number.isInteger(parsed) || parsed < 3 || parsed > 30) {
-    return 5;
+  if (!Number.isInteger(parsed) || parsed < MIN_AGENTS || parsed > MAX_AGENTS) {
+    return MIN_AGENTS;
   }
 
   return parsed;
+}
+
+function getPlanMonthlyTotal(plan: PlanCode, agents: number): number {
+  const normalizedAgents = Math.min(Math.max(agents, MIN_AGENTS), MAX_AGENTS);
+  const config = PLAN_CONFIGS[plan];
+  return config.baseMonthly + Math.max(normalizedAgents - MIN_AGENTS, 0) * config.additionalMonthly;
 }
 
 // --- Components ---
@@ -221,38 +259,62 @@ const clientLogos = [
   { name: "Valencia", src: "/Valencia_Logo_2025.avif" },
   { name: "Henderson Associates", src: "/henderson-logo.webp" },
   { name: "Finn Form", src: "/Finn_and_Form_Logo.svg" },
-  { name: "Kis Holdings", src: "/Kis_holdings.png" },
   { name: "Steamoji", src: "/steamoji_logo.png" },
-  { name: "Vesta", src: "/Vesta_logo_new_color_on_transparent_with_Canada_flag.avif" },
+  { name: "Vesta", src: "/Vesta_logo_new_color_on_transparent_with_Canada_flag.png" },
 ];
 
 const TrustedLogos = () => {
   return (
     <section className="relative w-full border-y border-white/5 py-16 overflow-hidden">
-      {/* Header same */}
-      <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 text-center">
-        <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-[2.1rem]">
-          The B2B growth teams your prospects already trust.
-        </h2>
-        <p className="text-base text-white/60">
-          Used by revenue, marketing, and founder-led teams in North America and beyond.
-        </p>
-      </div>
-      <div className="mt-10 [mask-image:linear-gradient(to_right,transparent,black_72px,black_calc(100%-72px),transparent)]">
-        <div className="w-max whitespace-nowrap animate-marquee-infinite flex items-center">
-          {/* 10x duplication = appears infinite */}
-          {Array.from({ length: 10 }, (_, i) => (
-            <div key={`track-${i}`} className="inline-flex items-center gap-12 px-12">
-              {clientLogos.map((logo, j) => (
-                <div
-                  key={`${logo.name}-${i}-${j}`}
-                  className="relative h-16 w-52 shrink-0 md:h-20 md:w-64 mx-4"
-                >
-                  <Image src={logo.src} alt={`${logo.name} logo`} fill className="object-contain" />
+      {/* Subtle background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-b from-teal/[0.02] via-transparent to-electric/[0.02] pointer-events-none" />
+
+      {/* Decorative glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[200px] bg-teal/5 blur-[100px] rounded-full pointer-events-none" />
+
+      <div className="relative z-10">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 text-center mb-4">
+          <div className="inline-flex items-center gap-2 rounded-full border border-teal/20 bg-teal/5 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-teal mb-2">
+            <Star className="w-3 h-3 fill-teal" />
+            Trusted By
+          </div>
+          <h2 className="text-2xl font-semibold tracking-tight text-white sm:text-3xl md:text-[2.1rem]">
+            The B2B growth teams your prospects already trust.
+          </h2>
+          <p className="text-base text-white/60">
+            Used by revenue, marketing, and founder-led teams in North America and beyond.
+          </p>
+        </div>
+
+        <div className="mt-12 relative">
+          {/* Enhanced mask with smoother gradient */}
+          <div className="[mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="w-max whitespace-nowrap animate-marquee-infinite flex items-center">
+              {Array.from({ length: 10 }, (_, i) => (
+                <div key={`track-${i}`} className="inline-flex items-center gap-16 px-8">
+                  {clientLogos.map((logo, j) => (
+                    <div
+                      key={`${logo.name}-${i}-${j}`}
+                      className="relative h-20 w-64 shrink-0 md:h-24 md:w-80 mx-4"
+                    >
+                      {/* Logo container */}
+                      <div className="relative h-full w-full rounded-2xl p-4">
+                        <Image
+                          src={logo.src}
+                          alt={`${logo.name} logo`}
+                          fill
+                          className="object-contain p-2"
+                          quality={100}
+                          priority={false}
+                          style={{ imageRendering: 'crisp-edges' }}
+                        />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </section>
@@ -498,25 +560,34 @@ const VideoPlayer = ({ videoPath, videoTitle }: { videoPath: string; videoTitle:
 };
 
 export default function HomePage() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPlan, setIsLoadingPlan] = useState<PlanCode | null>(null);
+  const [checkoutErrorPlan, setCheckoutErrorPlan] = useState<PlanCode | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [agentCount, setAgentCount] = useState<number>(getInitialAgentCount);
+  const initialPlan = getInitialPlan();
+  const initialAgents = getInitialAgentsFromQuery();
+  const [linkedinAgents, setLinkedinAgents] = useState<number>(
+    initialPlan === "linkedin_scale" ? initialAgents : MIN_AGENTS
+  );
+  const [multichannelAgents, setMultichannelAgents] = useState<number>(
+    initialPlan === "multichannel_scale" ? initialAgents : MIN_AGENTS
+  );
   const [expandedFaq, setExpandedFaq] = useState<number>(0);
   const [faqCategory, setFaqCategory] = useState<string>("general");
   const showIntegrations = process.env.NEXT_PUBLIC_SHOW_INTEGRATIONS === "true";
+  const linkedinTotal = getPlanMonthlyTotal("linkedin_scale", linkedinAgents);
+  const multichannelTotal = getPlanMonthlyTotal("multichannel_scale", multichannelAgents);
+  const linkedinProgress = ((linkedinAgents - MIN_AGENTS) / (MAX_AGENTS - MIN_AGENTS)) * 100;
+  const multichannelProgress =
+    ((multichannelAgents - MIN_AGENTS) / (MAX_AGENTS - MIN_AGENTS)) * 100;
 
-  const unitPrice =
-    agentCount <= 5 ? 750 : agentCount <= 10 ? 700 : agentCount <= 20 ? 650 : 600;
-  const monthlyTotal = agentCount * unitPrice;
-  const sliderProgress = ((agentCount - 3) / 27) * 100;
-
-  const handleCheckout = async () => {
-    if (isLoading) {
+  const handleCheckout = async (plan: PlanCode, agents: number) => {
+    if (isLoadingPlan) {
       return;
     }
 
     setCheckoutError(null);
-    setIsLoading(true);
+    setCheckoutErrorPlan(null);
+    setIsLoadingPlan(plan);
 
     try {
       const idempotencyKey = crypto.randomUUID();
@@ -526,13 +597,14 @@ export default function HomePage() {
           "Content-Type": "application/json",
           "x-idempotency-key": idempotencyKey
         },
-        body: JSON.stringify({ agents: agentCount })
+        body: JSON.stringify({ plan, agents })
       });
 
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (response.status === 401) {
-          window.location.assign("/login?next=/#pricing");
+          const next = encodeURIComponent(`/?plan=${plan}&agents=${agents}#pricing`);
+          window.location.assign(`/login?next=${next}`);
           return;
         }
         throw new Error(payload?.error ?? "Unable to start checkout session.");
@@ -548,7 +620,8 @@ export default function HomePage() {
       const message =
         error instanceof Error ? error.message : "Unable to start checkout session.";
       setCheckoutError(message);
-      setIsLoading(false);
+      setCheckoutErrorPlan(plan);
+      setIsLoadingPlan(null);
     }
   };
 
@@ -589,7 +662,7 @@ export default function HomePage() {
               <div className="mt-10 grid gap-3 text-sm text-white/50">
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
-                  <span>Each AI agent operates with two dedicated email inboxes and one established LinkedIn account.</span>
+                  <span>Choose a LinkedIn-only plan or full multi-channel outreach with LinkedIn + cold email.</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-teal" />
@@ -1180,62 +1253,47 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="mx-auto w-full max-w-5xl">
-              <div className="mb-12 rounded-3xl border border-white/10 bg-white/[0.03] p-8 text-left">
-                <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/40">Number of AI Sales Agents</p>
-                    <p className="mt-2 text-3xl font-bold text-white">{agentCount}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs uppercase tracking-[0.2em] text-white/40">Unit Price</p>
-                    <p className="mt-2 text-2xl font-bold text-teal">${unitPrice}/agent</p>
-                  </div>
+            <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-2">
+              <div className="glass-panel relative flex h-full flex-col overflow-hidden rounded-[40px] border-teal/30 p-8 text-left shadow-glow">
+                <div className="mt-5 flex items-center gap-3 text-teal">
+                  <ShieldCheck className="h-6 w-6" />
+                  <span className="text-xl font-bold uppercase tracking-tight">
+                    {PLAN_CONFIGS.linkedin_scale.label}
+                  </span>
                 </div>
-                <input
-                  type="range"
-                  min={3}
-                  max={30}
-                  step={1}
-                  value={agentCount}
-                  onChange={(event) => setAgentCount(Number(event.target.value))}
-                  aria-label="Select number of AI sales agents"
-                  className="h-3 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-teal"
-                  style={{
-                    background: `linear-gradient(to right, rgb(45 212 191) 0%, rgb(45 212 191) ${sliderProgress}%, rgba(255,255,255,0.12) ${sliderProgress}%, rgba(255,255,255,0.12) 100%)`
-                  }}
-                />
-                <div className="mt-5 grid gap-3 text-xs text-white/50 sm:grid-cols-4">
-                  <div className={agentCount >= 3 && agentCount <= 5 ? "text-teal font-semibold" : ""}>
-                    3-5 agents: $750 each
-                  </div>
-                  <div className={agentCount >= 6 && agentCount <= 10 ? "text-teal font-semibold" : ""}>
-                    6-10 agents: $700 each
-                  </div>
-                  <div className={agentCount >= 11 && agentCount <= 20 ? "text-teal font-semibold" : ""}>
-                    11-20 agents: $650 each
-                  </div>
-                  <div className={agentCount >= 21 ? "text-teal font-semibold" : ""}>21-30 agents: $600 each</div>
+                <div className="mt-6 flex items-end gap-3">
+                  <span className="text-5xl font-bold tracking-tighter text-white">
+                    ${linkedinTotal.toLocaleString()}
+                  </span>
+                  <span className="pb-1 text-sm font-medium text-white/40">/ month</span>
                 </div>
-              </div>
-
-              <div className="glass-panel relative overflow-hidden rounded-[48px] border-teal/30 p-12 text-left shadow-glow">
-                <div className="absolute top-0 right-0 bg-teal px-8 py-2 rounded-bl-3xl text-ink text-xs font-black uppercase tracking-widest">
-                  Dynamic Plan
-                </div>
-                <div className="mb-8 flex items-center gap-4 text-teal">
-                  <ShieldCheck className="h-8 w-8" />
-                  <span className="text-2xl font-bold uppercase tracking-tight">AI Agent Growth Plan</span>
-                </div>
-                <div className="mb-10 flex items-end gap-3">
-                  <span className="text-7xl font-bold text-white tracking-tighter">${monthlyTotal.toLocaleString()}</span>
-                  <span className="pb-2 text-white/40 font-medium">/ month</span>
-                </div>
-                <p className="mb-8 text-sm text-white/50">
-                  {agentCount} agents × ${unitPrice}/agent — covering cold email and LinkedIn outreach. 
+                <p className="mt-2 text-sm text-white/60">
+                  $750 for 2 agents, then $300 per additional agent.
                 </p>
-                <div className="mb-12 grid gap-x-12 gap-y-6 md:grid-cols-2">
-                  {pricingServices.map((service) => (
+
+                <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                  <div className="mb-3 flex items-center justify-between text-sm text-white/70">
+                    <span>AI Sales Agents</span>
+                    <span className="font-semibold text-white">{linkedinAgents}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={MIN_AGENTS}
+                    max={MAX_AGENTS}
+                    step={1}
+                    value={linkedinAgents}
+                    onChange={(event) => setLinkedinAgents(Number(event.target.value))}
+                    aria-label="Select number of LinkedIn plan agents"
+                    className="h-3 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-teal"
+                    style={{
+                      background: `linear-gradient(to right, rgb(45 212 191) 0%, rgb(45 212 191) ${linkedinProgress}%, rgba(255,255,255,0.12) ${linkedinProgress}%, rgba(255,255,255,0.12) 100%)`
+                    }}
+                  />
+                  <p className="mt-3 text-xs text-white/50">Minimum 2 agents, maximum 30 agents.</p>
+                </div>
+
+                <div className="mb-8 mt-8 grid flex-1 content-start gap-4">
+                  {PLAN_CONFIGS.linkedin_scale.services.map((service) => (
                     <div key={service} className="flex items-start gap-3">
                       <div className="mt-1 rounded-full bg-teal/20 p-0.5">
                         <Check className="h-3.5 w-3.5 text-teal" />
@@ -1244,21 +1302,88 @@ export default function HomePage() {
                     </div>
                   ))}
                 </div>
-                <button
-                  onClick={handleCheckout}
-                  disabled={isLoading}
-                  className="w-full rounded-2xl bg-teal py-5 text-lg font-black text-ink shadow-glow transition hover:-translate-y-1 active:translate-y-0 disabled:opacity-50"
-                >
-                  {isLoading ? "Redirecting..." : "Get Started & Begin Setup"}
-                </button>
-                {checkoutError && (
-                  <p className="mt-4 text-center text-sm text-rose-300">{checkoutError}</p>
-                )}
-                <p className="mt-6 text-center text-xs font-medium uppercase tracking-widest text-white">
-                  Paid upfront. Get <span className="font-bold text-teal">25% off</span> your first month. Cancel anytime.
+
+                <div className="mt-auto">
+                  <button
+                    onClick={() => void handleCheckout("linkedin_scale", linkedinAgents)}
+                    disabled={Boolean(isLoadingPlan)}
+                    className="w-full rounded-2xl bg-teal py-4 text-base font-black text-ink shadow-glow transition hover:-translate-y-1 active:translate-y-0 disabled:opacity-50"
+                  >
+                    {isLoadingPlan === "linkedin_scale" ? "Redirecting..." : "Choose LinkedIn Scale"}
+                  </button>
+                  {checkoutError && checkoutErrorPlan === "linkedin_scale" && (
+                    <p className="mt-4 text-center text-sm text-rose-300">{checkoutError}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="glass-panel relative flex h-full flex-col overflow-hidden rounded-[40px] border-teal/30 p-8 text-left shadow-glow">
+                <div className="mt-5 flex items-center gap-3 text-teal">
+                  <ShieldCheck className="h-6 w-6" />
+                  <span className="text-xl font-bold uppercase tracking-tight">
+                    {PLAN_CONFIGS.multichannel_scale.label}
+                  </span>
+                </div>
+                <div className="mt-6 flex items-end gap-3">
+                  <span className="text-5xl font-bold tracking-tighter text-white">
+                    ${multichannelTotal.toLocaleString()}
+                  </span>
+                  <span className="pb-1 text-sm font-medium text-white/40">/ month</span>
+                </div>
+                <p className="mt-2 text-sm text-white/60">
+                  $1,350 for 2 agents, then $550 per additional agent.
                 </p>
+
+                <div className="mt-7 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+                  <div className="mb-3 flex items-center justify-between text-sm text-white/70">
+                    <span>AI Sales Agents</span>
+                    <span className="font-semibold text-white">{multichannelAgents}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min={MIN_AGENTS}
+                    max={MAX_AGENTS}
+                    step={1}
+                    value={multichannelAgents}
+                    onChange={(event) => setMultichannelAgents(Number(event.target.value))}
+                    aria-label="Select number of Multi-Channel plan agents"
+                    className="h-3 w-full cursor-pointer appearance-none rounded-full bg-white/10 accent-teal"
+                    style={{
+                      background: `linear-gradient(to right, rgb(45 212 191) 0%, rgb(45 212 191) ${multichannelProgress}%, rgba(255,255,255,0.12) ${multichannelProgress}%, rgba(255,255,255,0.12) 100%)`
+                    }}
+                  />
+                  <p className="mt-3 text-xs text-white/50">Minimum 2 agents, maximum 30 agents.</p>
+                </div>
+
+                <div className="mb-8 mt-8 grid flex-1 content-start gap-4">
+                  {PLAN_CONFIGS.multichannel_scale.services.map((service) => (
+                    <div key={service} className="flex items-start gap-3">
+                      <div className="mt-1 rounded-full bg-teal/20 p-0.5">
+                        <Check className="h-3.5 w-3.5 text-teal" />
+                      </div>
+                      <span className="text-sm font-medium leading-relaxed text-white">{service}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-auto">
+                  <button
+                    onClick={() => void handleCheckout("multichannel_scale", multichannelAgents)}
+                    disabled={Boolean(isLoadingPlan)}
+                    className="w-full rounded-2xl bg-teal py-4 text-base font-black text-ink shadow-glow transition hover:-translate-y-1 active:translate-y-0 disabled:opacity-50"
+                  >
+                    {isLoadingPlan === "multichannel_scale" ? "Redirecting..." : "Choose Multi-Channel Scale"}
+                  </button>
+                  {checkoutError && checkoutErrorPlan === "multichannel_scale" && (
+                    <p className="mt-4 text-center text-sm text-rose-300">{checkoutError}</p>
+                  )}
+                </div>
               </div>
             </div>
+
+            <p className="mt-8 text-center text-xs font-medium uppercase tracking-widest text-white">
+              Paid upfront. Get <span className="font-bold text-teal">25% off</span> your first month. Cancel anytime.
+            </p>
           </motion.section>
         </main>
 
