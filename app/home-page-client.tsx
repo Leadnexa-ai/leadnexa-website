@@ -1,5 +1,5 @@
 ﻿"use client";
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, ReactElement } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import SiteHeader from "./components/site-header";
@@ -456,7 +456,7 @@ const UIMockup = () => (
 
 const renderFaqAnswer = (answer: string) => {
   const lines = answer.split('\n');
-  const elements: JSX.Element[] = [];
+  const elements: ReactElement[] = [];
   let bulletPoints: string[] = [];
   let currentText = '';
 
