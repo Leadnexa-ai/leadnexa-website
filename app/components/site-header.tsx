@@ -32,7 +32,8 @@ export default function SiteHeader({
     { label: "Case Studies", href: withPrefix("#case-studies") },
     { label: "Why AI Agents", href: withPrefix("#comparison") },
     ...(showIntegrations ? [{ label: "Integrations", href: withPrefix("#integrations") }] : []),
-    { label: "Pricing", href: withPrefix("#pricing") }
+    { label: "Pricing", href: withPrefix("#pricing") },
+    { label: "Target Snapshot", href: "/lead-search" }
   ];
 
   useEffect(() => {
