@@ -16,9 +16,7 @@ function getSupportEmail(): string {
 function getTeamNotificationRecipients(): string[] {
   const configured = (process.env.TEAM_PURCHASE_NOTIFICATION_EMAILS ?? "").trim();
   const fallback = [
-    "sam@leadnexa.ai",
-    "dave@leadnexa.ai",
-    "shannon@leadnexa.ai"
+    "sam@leadnexa.ai"
   ];
   const source = configured ? configured.split(",") : fallback;
   const normalized = source
