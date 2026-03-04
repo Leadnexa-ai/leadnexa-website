@@ -18,8 +18,7 @@ function getTeamNotificationRecipients(): string[] {
   const fallback = [
     "sam@leadnexa.ai",
     "dave@leadnexa.ai",
-    "shannon@leadnexa.ai",
-    "tim@leadnexa.ai"
+    "shannon@leadnexa.ai"
   ];
   const source = configured ? configured.split(",") : fallback;
   const normalized = source
@@ -135,6 +134,18 @@ export async function sendPostCheckoutConfirmationEmail(
     `Support: ${supportEmail}`
   ].join("\n");
 
+  const markConfirmationSent = async () => {
+    const markSent = await supabase
+      .from("client_subscriptions")
+      .update({ purchase_confirmation_sent_at: new Date().toISOString() })
+      .eq("id", row.id)
+      .is("purchase_confirmation_sent_at", null);
+
+    if (markSent.error) {
+      throw new Error(`Failed to mark confirmation email as sent: ${markSent.error.message}`);
+    }
+  };
+
   if (recipient) {
     await sendEmail({
       to: recipient,
@@ -143,6 +154,10 @@ export async function sendPostCheckoutConfirmationEmail(
       text
     });
   }
+
+  // Mark as sent immediately after customer email succeeds (or when no recipient exists)
+  // so internal notification failures cannot trigger repeated customer emails on webhook retries.
+  await markConfirmationSent();
 
   if (teamRecipients.length > 0) {
     const internalSubject = `New purchase confirmed - ${accountName}`;
@@ -169,7 +184,7 @@ export async function sendPostCheckoutConfirmationEmail(
       "Onboarding booking link: https://cal.com/team/leadnexa/on-boarding-meeting"
     ].join("\n");
 
-    await Promise.all(
+    const internalResults = await Promise.allSettled(
       teamRecipients.map((teamEmail) =>
         sendEmail({
           to: teamEmail,
@@ -179,15 +194,16 @@ export async function sendPostCheckoutConfirmationEmail(
         })
       )
     );
-  }
 
-  const markSent = await supabase
-    .from("client_subscriptions")
-    .update({ purchase_confirmation_sent_at: new Date().toISOString() })
-    .eq("id", row.id)
-    .is("purchase_confirmation_sent_at", null);
+    const failedRecipients = internalResults
+      .map((result, index) => ({ result, email: teamRecipients[index] }))
+      .filter((item) => item.result.status === "rejected")
+      .map((item) => item.email);
 
-  if (markSent.error) {
-    throw new Error(`Failed to mark confirmation email as sent: ${markSent.error.message}`);
+    if (failedRecipients.length > 0) {
+      console.error(
+        `[post-checkout-email] Internal purchase notifications failed for: ${failedRecipients.join(", ")}`
+      );
+    }
   }
 }
