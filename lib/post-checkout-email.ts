@@ -40,6 +40,10 @@ function formatPeriodEnd(value: string | null): string {
   });
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function sendPostCheckoutConfirmationEmail(
   input: SendPostCheckoutEmailInput
 ): Promise<void> {
@@ -182,21 +186,21 @@ export async function sendPostCheckoutConfirmationEmail(
       "Onboarding booking link: https://cal.com/team/leadnexa/on-boarding-meeting"
     ].join("\n");
 
-    const internalResults = await Promise.allSettled(
-      teamRecipients.map((teamEmail) =>
-        sendEmail({
+    const failedRecipients: string[] = [];
+    const INTERNAL_EMAIL_GAP_MS = 600;
+    for (const teamEmail of teamRecipients) {
+      try {
+        await sendEmail({
           to: teamEmail,
           subject: internalSubject,
           html: internalHtml,
           text: internalText
-        })
-      )
-    );
-
-    const failedRecipients = internalResults
-      .map((result, index) => ({ result, email: teamRecipients[index] }))
-      .filter((item) => item.result.status === "rejected")
-      .map((item) => item.email);
+        });
+      } catch {
+        failedRecipients.push(teamEmail);
+      }
+      await sleep(INTERNAL_EMAIL_GAP_MS);
+    }
 
     if (failedRecipients.length > 0) {
       console.error(
