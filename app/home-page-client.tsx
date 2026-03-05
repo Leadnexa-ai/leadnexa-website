@@ -1073,7 +1073,7 @@ export default function HomePage() {
                   {
                     q: "What is Leadnexa?",
                     a: "Leadnexa provides AI sales agents that act as an always-on SDR team, generating qualified B2B leads and meetings without hiring traditional staff.",
-                    videoPath: "/what-is-leadnexa.mp4",
+                    videoPath: "/LeadNexa_AI_-_The_White_Glove_Process_v8.mp4",
                     videoTitle: "What is Leadnexa"
                   },
                   {
@@ -1117,13 +1117,13 @@ export default function HomePage() {
                   {
                     q: "How does LinkedIn outreach work with Leadnexa agents?",
                     a: "Agents build ICP-aligned lead lists, optimize and warm profiles, send personalized connects (up to 500/month per agent) with smart follow-ups, and route high-intent replies to your team.",
-                    videoPath: "/videos/linkedin-outreach.mp4",
+                    videoPath: "/LeadNexa LinkedIn Outreach Explainer_1080p.mp4",
                     videoTitle: "LinkedIn Outreach Process"
                   },
                   {
                     q: "What is the process for cold email campaigns?",
                     a: "Agents build enriched ICP lists, write personalized sequences with follow-ups, execute safe outreach (up to 2,000 emails/month per agent once warmed), monitor deliverability, and route interested replies.",
-                    videoPath: "/videos/cold-email-campaigns.mp4",
+                    videoPath: "/LeadNexa_Cold_Email_Process_with_Logo_v2.mp4",
                     videoTitle: "Cold Email Campaigns"
                   },
                   {
@@ -1135,13 +1135,13 @@ export default function HomePage() {
                   {
                     q: "How does Leadnexa ensure LinkedIn account safety?",
                     a: "Leadnexa provides and manages high-quality accounts with brand positioning, ICP-aligned profiles, health checks, safe daily limits, and consistent outreach practices.",
-                    videoPath: "/videos/linkedin-safety.mp4",
+                    videoPath: "/LinkedIn Account Safety with LeadNexa_1080p.mp4",
                     videoTitle: "LinkedIn Account Safety"
                   },
                   {
                     q: "How do you protect deliverability?",
                     a: "We protect deliverability through gradual warm-up, controlled sending volumes, and continuous engagement monitoring — ensuring long-term sender reputation.",
-                    videoPath: "/videos/deliverability.mp4",
+                    videoPath: "/LeadNexa_ LinkedIn Deliverability Protection_1080p.mp4",
                     videoTitle: "Deliverability Protection"
                   },
                   {
@@ -1153,7 +1153,7 @@ export default function HomePage() {
                   {
                     q: "How does scaling agents work for larger outreach?",
                     a: "Scale from 1-30 agents with volume pricing; e.g.:\n• 5 agents: 5 accounts, 2.5k connects, 10k emails\n• 20 agents: 20 accounts, 10k connects, 40k emails",
-                    videoPath: "/videos/scaling-agents.mp4",
+                    videoPath: "/Scaling LeadNexa Agents_1080p.mp4",
                     videoTitle: "Scaling Agents"
                   }
                 ],
