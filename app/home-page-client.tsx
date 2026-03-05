@@ -1084,21 +1084,15 @@ export default function HomePage() {
                   },
                   {
                     q: "What types of B2B companies benefit most from Leadnexa?",
-                    a: "Companies with significant deal sizes needing systematic outbound to supplement or replace prospecting, where teams can close qualified conversations handed off by the agents.",
-                    videoPath: "/videos/best-fit-companies.mp4",
-                    videoTitle: "Best Fit Companies"
+                    a: "Leadnexa is ideal for B2B companies with:\n• Deal sizes of $10k+ annually where systematic outbound generates significant ROI\n• Decision-makers reachable on LinkedIn and email\n• Sales teams ready to close qualified conversations but lacking consistent lead flow\n• Organizations looking to supplement or replace traditional prospecting\n• Companies needing predictable pipeline growth without SDR hiring overhead"
                   },
                   {
                     q: "How long does it take to launch Leadnexa campaigns?",
-                    a: "Launch in 4-14 days after choosing package, submitting onboarding questionnaire, and kickoff strategy call.",
-                    videoPath: "/videos/launch-process.mp4",
-                    videoTitle: "Quick Launch Process"
+                    a: "Most campaigns launch within 4-14 days.\n\nThe timeline includes:\n• Onboarding questionnaire submission (1-2 days)\n• Strategy kickoff call with your Success Manager (scheduled within 1 week)\n• Infrastructure setup: domains, email warming, LinkedIn profile optimization (3-7 days)\n• Campaign launch and first outreach wave\n\nFaster launches are possible for LinkedIn-only campaigns with existing profiles."
                   },
                   {
                     q: "Is Leadnexa customizable for my brand?",
-                    a: "Yes, LinkedIn profiles are customized with headlines, banners, and summaries aligned to your business and ICP.",
-                    videoPath: "/videos/brand-customization.mp4",
-                    videoTitle: "Brand Customization"
+                    a: "Yes. Every aspect is customized for your brand:\n• LinkedIn profiles with custom headlines, banners, and summaries aligned to your ICP\n• Messaging crafted in your brand voice and value proposition\n• Campaign strategies tailored to your target audience and sales cycle\n• CRM and workflow integrations matched to your sales process\n• Continuous optimization based on your ideal customer feedback"
                   },
                   {
                     q: "How do Leadnexa AI agents replace traditional sales team?",
@@ -1108,9 +1102,15 @@ export default function HomePage() {
                   },
                   {
                     q: "Do you write and optimize messaging?",
-                    a: "Yes. We create and test multi-variant outbound messaging, optimizing based on engagement signals and campaign performance.",
-                    videoPath: "/videos/messaging-optimization.mp4",
-                    videoTitle: "Message Optimization"
+                    a: "Yes. Our team handles all messaging:\n• Initial message templates created based on your value proposition and ICP\n• Multi-variant testing across different angles and CTAs\n• Continuous optimization based on reply rates and engagement signals\n• A/B testing of subject lines, opening hooks, and follow-up timing\n• Regular performance reviews with your Success Manager to refine messaging strategy"
+                  },
+                  {
+                    q: "How does Leadnexa handle replies and lead handoff?",
+                    a: "Our AI intent routing system:\n• Monitors all replies in real-time across LinkedIn and email\n• Classifies prospect interest level (high, medium, low intent)\n• Routes qualified leads to your team via CRM, Slack, or email\n• Flags objections or questions that need human response\n• Continues nurturing lower-intent prospects automatically\n• Syncs all conversation history so your team has full context"
+                  },
+                  {
+                    q: "What volume can one AI sales agent handle monthly?",
+                    a: "Each AI sales agent manages:\n• 1 LinkedIn account: up to 500 connection requests per month\n• 2 email inboxes: up to 2,000 emails per month (after warm-up)\n• Unlimited automated follow-ups and reply handling\n• Multiple simultaneous campaigns across different ICPs\n\nTo scale volume, simply add more agents. For example:\n• 5 agents = 2,500 LinkedIn connects + 10,000 emails/month\n• 10 agents = 5,000 LinkedIn connects + 20,000 emails/month"
                   }
                 ],
                 howitworks: [
@@ -1128,9 +1128,7 @@ export default function HomePage() {
                   },
                   {
                     q: "How does Leadnexa handle replies and lead handoff?",
-                    a: "Agents flag interested replies via intent routing, qualify them, and hand off high-intent leads to your team for closing, with continuous campaign optimization.",
-                    videoPath: "/videos/reply-handoff.mp4",
-                    videoTitle: "Reply & Lead Handoff"
+                    a: "Our AI intent routing system:\n• Monitors all replies in real-time across LinkedIn and email\n• Classifies prospect interest level (high, medium, low intent)\n• Routes qualified leads to your team via CRM, Slack, or email\n• Flags objections or questions that need human response\n• Continues nurturing lower-intent prospects automatically\n• Syncs all conversation history so your team has full context"
                   },
                   {
                     q: "How does Leadnexa ensure LinkedIn account safety?",
@@ -1146,9 +1144,7 @@ export default function HomePage() {
                   },
                   {
                     q: "What volume can one AI sales agent handle monthly?",
-                    a: "One agent manages 1 LinkedIn account for 500 connects, 2 email inboxes for 2,000 emails, with scaling via additional agents.",
-                    videoPath: "/videos/agent-volume.mp4",
-                    videoTitle: "Agent Volume Capacity"
+                    a: "Each AI sales agent manages:\n• 1 LinkedIn account: up to 500 connection requests per month\n• 2 email inboxes: up to 2,000 emails per month (after warm-up)\n• Unlimited automated follow-ups and reply handling\n• Multiple simultaneous campaigns across different ICPs\n\nTo scale volume, simply add more agents. For example:\n• 5 agents = 2,500 LinkedIn connects + 10,000 emails/month\n• 10 agents = 5,000 LinkedIn connects + 20,000 emails/month"
                   },
                   {
                     q: "How does scaling agents work for larger outreach?",
@@ -1182,6 +1178,8 @@ export default function HomePage() {
               const currentFaqs = faqData[faqCategory as keyof typeof faqData] || faqData.general;
               const currentFaq = currentFaqs[expandedFaq] || currentFaqs[0];
               const isPricingCategory = faqCategory === "pricing";
+              const hasVideo = currentFaq.videoPath && currentFaq.videoTitle;
+              const showAnswerOnRight = isPricingCategory || !hasVideo;
 
               return (
                 <div className="grid lg:grid-cols-[1fr_1.2fr] gap-8 lg:gap-12 items-start">
@@ -1208,8 +1206,12 @@ export default function HomePage() {
                                     <BarChart3 className={`w-3.5 h-3.5 transition-colors ${
                                       expandedFaq === index ? 'text-teal' : 'text-white/40'
                                     }`} />
-                                  ) : (
+                                  ) : item.videoPath ? (
                                     <Video className={`w-3.5 h-3.5 transition-colors ${
+                                      expandedFaq === index ? 'text-teal' : 'text-white/40'
+                                    }`} />
+                                  ) : (
+                                    <MessageSquare className={`w-3.5 h-3.5 transition-colors ${
                                       expandedFaq === index ? 'text-teal' : 'text-white/40'
                                     }`} />
                                   )}
@@ -1220,7 +1222,7 @@ export default function HomePage() {
                                   {item.q}
                                 </h3>
                               </div>
-                              {!isPricingCategory && (
+                              {!showAnswerOnRight && (
                                 <div className={`overflow-hidden transition-all duration-300 ${
                                   expandedFaq === index ? 'max-h-[500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
                                 }`}>
@@ -1228,7 +1230,7 @@ export default function HomePage() {
                                 </div>
                               )}
                             </div>
-                            {!isPricingCategory && (
+                            {!showAnswerOnRight && (
                               <ChevronDown 
                                 className={`w-4 h-4 text-teal shrink-0 mt-1 transition-transform duration-300 ${
                                   expandedFaq === index ? 'rotate-180' : ''
@@ -1242,17 +1244,23 @@ export default function HomePage() {
                   </div>
 
                   {/* Right Panel - Video or Answer */}
-                  {isPricingCategory ? (
+                  {showAnswerOnRight ? (
                     <div className="sticky top-24">
                       <div className="glass-panel rounded-3xl overflow-hidden border-teal/30 bg-ink/60 shadow-[0_0_60px_rgba(45,212,191,0.1)]">
                         <div className="p-8">
                           <div className="flex items-center gap-3 mb-6">
                             <div className="w-12 h-12 rounded-2xl bg-teal/20 flex items-center justify-center">
-                              <BarChart3 className="h-6 w-6 text-teal" />
+                              {isPricingCategory ? (
+                                <BarChart3 className="h-6 w-6 text-teal" />
+                              ) : (
+                                <MessageSquare className="h-6 w-6 text-teal" />
+                              )}
                             </div>
                             <div>
                               <h3 className="text-lg font-bold text-white">{currentFaq.q}</h3>
-                              <p className="text-xs text-white/50 uppercase tracking-[0.2em]">Pricing Details</p>
+                              <p className="text-xs text-white/50 uppercase tracking-[0.2em]">
+                                {isPricingCategory ? 'Pricing Details' : 'Answer'}
+                              </p>
                             </div>
                           </div>
                           <div className="space-y-4 text-white/80 leading-relaxed">
@@ -1277,17 +1285,19 @@ export default function HomePage() {
                             })}
                           </div>
                         </div>
-                        <div className="px-8 pb-8">
-                          <div className="rounded-2xl bg-teal/10 border border-teal/30 p-5">
-                            <div className="flex items-center gap-2 mb-3">
-                              <ShieldCheck className="w-5 h-5 text-teal" />
-                              <span className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">Flexible Terms</span>
+                        {isPricingCategory && (
+                          <div className="px-8 pb-8">
+                            <div className="rounded-2xl bg-teal/10 border border-teal/30 p-5">
+                              <div className="flex items-center gap-2 mb-3">
+                                <ShieldCheck className="w-5 h-5 text-teal" />
+                                <span className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">Flexible Terms</span>
+                              </div>
+                              <p className="text-xs text-white/60 leading-relaxed">
+                                No long-term contracts required. 14-day free trial available. Cancel anytime with 30 days notice.
+                              </p>
                             </div>
-                            <p className="text-xs text-white/60 leading-relaxed">
-                              No long-term contracts required. 14-day free trial available. Cancel anytime with 30 days notice.
-                            </p>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   ) : (
