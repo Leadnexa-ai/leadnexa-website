@@ -1163,11 +1163,11 @@ export default function HomePage() {
                 pricing: [
                   {
                     q: "What's included in each agent subscription?",
-                    a: "We offer two plans:\n\nPlan 1 - LinkedIn Scaling ($750 for 2 agents):\n• 1 LinkedIn account per agent\n• LinkedIn-only outreach\n\nPlan 2 - Multi-Channel Scaling ($1,350 for 2 agents):\n• 1 LinkedIn account + 2 email inboxes per agent\n• LinkedIn + cold email outreach\n\nBoth plans include:\n• AI-powered personalization & follow-ups\n• Custom ICP strategy\n• Unlimited campaigns\n• Real-time reply routing\n• Weekly reporting\n• Dedicated Success Manager"
+                    a: "We offer two plans:\n\nPlan 1 - LinkedIn Scaling (Starts $750 for 2 agents):\n• 1 LinkedIn account per agent\n• LinkedIn-only outreach\n\nPlan 2 - Multi-Channel Scaling (Starts $1,350 for 2 agents):\n• 1 LinkedIn account + 2 email inboxes per agent\n• LinkedIn + cold email outreach\n\nBoth plans include:\n• AI-powered personalization & follow-ups\n• Custom ICP strategy\n• Unlimited campaigns\n• Real-time reply routing\n• Weekly reporting\n• Dedicated Success Manager"
                   },
                   {
                     q: "Can I cancel anytime?",
-                    a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers."
+                    a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice."
                   },
                   {
                     q: "Do you offer volume discounts?",
