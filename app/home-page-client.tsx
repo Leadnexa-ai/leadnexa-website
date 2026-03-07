@@ -1168,19 +1168,16 @@ export default function HomePage() {
                   {
                     q: "What's included in each agent subscription?",
                     a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager",
-                    videoPath: VIDEO_URLS.pricingDetails,
                     videoTitle: "Pricing Breakdown"
                   },
                   {
                     q: "Can I cancel anytime?",
                     a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers.",
-                    videoPath: VIDEO_URLS.trialCancellation,
                     videoTitle: "Trial & Cancellation"
                   },
                   {
                     q: "Do you offer volume discounts?",
                     a: "We offer transparent flat-rate pricing:\n• LinkedIn Scale: $750 for 2 agents, then $300 per additional agent\n• Multi-Channel Scale: $1,350 for 2 agents, then $550 per additional agent\n• Get 25% off your first month\n\nFor teams needing 30+ agents, contact us for custom enterprise pricing.",
-                    videoPath: VIDEO_URLS.volumeDiscounts,
                     videoTitle: "Volume Discounts"
                   }
                 ]
