@@ -1167,18 +1167,15 @@ export default function HomePage() {
                 pricing: [
                   {
                     q: "What's included in each agent subscription?",
-                    a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager",
-                    videoTitle: "Pricing Breakdown"
+                    a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager"
                   },
                   {
                     q: "Can I cancel anytime?",
-                    a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers.",
-                    videoTitle: "Trial & Cancellation"
+                    a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers."
                   },
                   {
                     q: "Do you offer volume discounts?",
-                    a: "We offer transparent flat-rate pricing:\n• LinkedIn Scale: $750 for 2 agents, then $300 per additional agent\n• Multi-Channel Scale: $1,350 for 2 agents, then $550 per additional agent\n• Get 25% off your first month\n\nFor teams needing 30+ agents, contact us for custom enterprise pricing.",
-                    videoTitle: "Volume Discounts"
+                    a: "We offer transparent flat-rate pricing:\n• LinkedIn Scale: $750 for 2 agents, then $300 per additional agent\n• Multi-Channel Scale: $1,350 for 2 agents, then $550 per additional agent\n• Get 25% off your first month\n\nFor teams needing 30+ agents, contact us for custom enterprise pricing."
                   }
                 ]
               };
@@ -1186,7 +1183,7 @@ export default function HomePage() {
               const currentFaqs = faqData[faqCategory as keyof typeof faqData] || faqData.general;
               const currentFaq = currentFaqs[expandedFaq] || currentFaqs[0];
               const isPricingCategory = faqCategory === "pricing";
-              const hasVideo = currentFaq.videoPath && currentFaq.videoTitle;
+              const hasVideo = 'videoPath' in currentFaq && 'videoTitle' in currentFaq;
               const showAnswerOnRight = isPricingCategory || !hasVideo;
 
               return (
@@ -1214,7 +1211,7 @@ export default function HomePage() {
                                     <BarChart3 className={`w-3.5 h-3.5 transition-colors ${
                                       expandedFaq === index ? 'text-teal' : 'text-white/40'
                                     }`} />
-                                  ) : item.videoPath ? (
+                                  ) : 'videoPath' in item ? (
                                     <Video className={`w-3.5 h-3.5 transition-colors ${
                                       expandedFaq === index ? 'text-teal' : 'text-white/40'
                                     }`} />
@@ -1309,7 +1306,12 @@ export default function HomePage() {
                       </div>
                     </div>
                   ) : (
-                    <VideoPlayer videoPath={currentFaq.videoPath} videoTitle={currentFaq.videoTitle} />
+                    hasVideo && (
+                      <VideoPlayer 
+                        videoPath={(currentFaq as any).videoPath} 
+                        videoTitle={(currentFaq as any).videoTitle} 
+                      />
+                    )
                   )}
                 </div>
               );
