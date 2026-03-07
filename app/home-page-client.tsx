@@ -30,7 +30,7 @@ import {
 // To get your URLs: vercel blob ls OR check Vercel Dashboard > Storage > Blob
 const VIDEO_URLS = {
   whiteGloveProcess: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa_AI_-_The_White_Glove_Process_v8.mp4",
-  vsTraditionalReps: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20vs%20Traditional%20Sales%20Reps_%20Simple%20Comparison_1080p.mp4",
+  vsTraditionalReps: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20vs%20Traditional%20Sales%20Reps_%20Simple%20Comparison_1080p%20%281%29.mp4",
   smarterProspecting: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20AI_%20Smarter%20Prospecting_1080p.mp4",
   linkedinOutreach: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20LinkedIn%20Outreach%20Explainer_1080p.mp4",
   coldEmailProcess: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa_Cold_Email_Process_with_Logo_v2.mp4",
@@ -1010,7 +1010,7 @@ export default function HomePage() {
                     <p className="font-semibold text-white text-[11px] uppercase tracking-[0.2em] mb-1">
                       Risk-Free to Get Started
                     </p>
-                    <p>No long-term contracts. 14-day free trial, cancel anytime.</p>
+                    <p>No long-term contracts. Cancel anytime with 30 days notice.</p>
                   </div>
                 </div>
               </div>
@@ -1103,7 +1103,7 @@ export default function HomePage() {
                   },
                   {
                     q: "Is Leadnexa customizable for my brand?",
-                    a: "Yes. Every aspect is customized for your brand:\n• LinkedIn profiles with custom headlines, banners, and summaries aligned to your ICP\n• Messaging crafted in your brand voice and value proposition\n• Campaign strategies tailored to your target audience and sales cycle\n• CRM and workflow integrations matched to your sales process\n• Continuous optimization based on your ideal customer feedback"
+                    a: "Yes. Every aspect is customized for your brand:\n• LinkedIn profiles with custom headlines, banners, and summaries aligned to your Ideal Customer Profile (ICP)\n• Messaging crafted in your brand voice and value proposition\n• Campaign strategies tailored to your target audience and sales cycle\n• CRM and workflow integrations matched to your sales process\n• Continuous optimization based on your ideal customer feedback"
                   },
                   {
                     q: "How do Leadnexa AI agents replace traditional sales team?",
@@ -1113,27 +1113,23 @@ export default function HomePage() {
                   },
                   {
                     q: "Do you write and optimize messaging?",
-                    a: "Yes. Our team handles all messaging:\n• Initial message templates created based on your value proposition and ICP\n• Multi-variant testing across different angles and CTAs\n• Continuous optimization based on reply rates and engagement signals\n• A/B testing of subject lines, opening hooks, and follow-up timing\n• Regular performance reviews with your Success Manager to refine messaging strategy"
+                    a: "Yes. Our team handles all messaging:\n• Initial message templates created based on your value proposition and Ideal Customer Profile (ICP)\n• Multi-variant testing across different angles and CTAs\n• Continuous optimization based on reply rates and engagement signals\n• Regular performance reviews with your Success Manager to refine messaging strategy"
                   },
                   {
                     q: "How does Leadnexa handle replies and lead handoff?",
                     a: "Our AI intent routing system:\n• Monitors all replies in real-time across LinkedIn and email\n• Classifies prospect interest level (high, medium, low intent)\n• Routes qualified leads to your team via CRM, Slack, or email\n• Flags objections or questions that need human response\n• Continues nurturing lower-intent prospects automatically\n• Syncs all conversation history so your team has full context"
-                  },
-                  {
-                    q: "What volume can one AI sales agent handle monthly?",
-                    a: "Each AI sales agent manages:\n• 1 LinkedIn account: up to 500 connection requests per month\n• 2 email inboxes: up to 2,000 emails per month (after warm-up)\n• Unlimited automated follow-ups and reply handling\n• Multiple simultaneous campaigns across different ICPs\n\nTo scale volume, simply add more agents. For example:\n• 5 agents = 2,500 LinkedIn connects + 10,000 emails/month\n• 10 agents = 5,000 LinkedIn connects + 20,000 emails/month"
                   }
                 ],
                 howitworks: [
                   {
                     q: "How does LinkedIn outreach work with Leadnexa agents?",
-                    a: "Agents build ICP-aligned lead lists, optimize and warm profiles, send personalized connects (up to 500/month per agent) with smart follow-ups, and route high-intent replies to your team.",
+                    a: "Our teams build ICP-aligned lead lists, optimize and warm profiles, AI agents send personalized connects (up to 500/month per agent) with smart follow-ups, and route high-intent replies to your team.",
                     videoPath: VIDEO_URLS.linkedinOutreach,
                     videoTitle: "LinkedIn Outreach Process"
                   },
                   {
                     q: "What is the process for cold email campaigns?",
-                    a: "Agents build enriched ICP lists, write personalized sequences with follow-ups, execute safe outreach (up to 2,000 emails/month per agent once warmed), monitor deliverability, and route interested replies.",
+                    a: "Our teams build enriched ICP lists, write personalized sequences with follow-ups, execute safe outreach (up to 2,000 emails/month per agent once warmed), monitor deliverability, and route interested replies.",
                     videoPath: VIDEO_URLS.coldEmailProcess,
                     videoTitle: "Cold Email Campaigns"
                   },
@@ -1167,7 +1163,7 @@ export default function HomePage() {
                 pricing: [
                   {
                     q: "What's included in each agent subscription?",
-                    a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager"
+                    a: "We offer two plans:\n\nPlan 1 - LinkedIn Scaling ($750 for 2 agents):\n• 1 LinkedIn account per agent\n• LinkedIn-only outreach\n\nPlan 2 - Multi-Channel Scaling ($1,350 for 2 agents):\n• 1 LinkedIn account + 2 email inboxes per agent\n• LinkedIn + cold email outreach\n\nBoth plans include:\n• AI-powered personalization & follow-ups\n• Custom ICP strategy\n• Unlimited campaigns\n• Real-time reply routing\n• Weekly reporting\n• Dedicated Success Manager"
                   },
                   {
                     q: "Can I cancel anytime?",
@@ -1268,26 +1264,182 @@ export default function HomePage() {
                               </p>
                             </div>
                           </div>
-                          <div className="space-y-4 text-white/80 leading-relaxed">
-                            {currentFaq.a.split('\n').map((line, i) => {
-                              if (line.trim().startsWith('•')) {
-                                return (
-                                  <div key={i} className="flex items-start gap-3 py-2">
-                                    <div className="mt-1.5 rounded-full bg-teal/20 p-1">
-                                      <Check className="h-3 w-3 text-teal" />
-                                    </div>
-                                    <span className="text-sm">{line.replace(/^[•\s]+/, '').trim()}</span>
-                                  </div>
-                                );
-                              } else if (line.trim()) {
-                                return (
-                                  <p key={i} className="text-sm leading-relaxed">
-                                    {line.trim()}
+                          <div className="space-y-3 text-white/80 leading-relaxed">
+                            {(() => {
+                              type PlanSection = { title: string; bullets: string[] };
+                              const lines = currentFaq.a.split('\n');
+                              const elements: ReactElement[] = [];
+                              let currentPlan: PlanSection | null = null;
+                              const plans: PlanSection[] = [];
+                              let commonSection: PlanSection | null = null;
+                              let introText: string[] = [];
+                              let inPlans = false;
+                              let hasPlans = false;
+
+                              // First pass: check if this answer has plan structure
+                              lines.forEach((line) => {
+                                if (line.trim().match(/^Plan \d+.*:$/)) {
+                                  hasPlans = true;
+                                }
+                              });
+
+                              // If no plans detected, use simple rendering
+                              if (!hasPlans) {
+                                return lines.map((line, i) => {
+                                  const trimmedLine = line.trim();
+                                  
+                                  // Check if it's a section header (ends with ":")
+                                  if (trimmedLine.endsWith(':') && !trimmedLine.startsWith('•')) {
+                                    return (
+                                      <h4 key={i} className="text-sm font-semibold text-white/90 mt-4 first:mt-0 mb-2">
+                                        {trimmedLine}
+                                      </h4>
+                                    );
+                                  }
+                                  // Check if it's a bullet point
+                                  else if (trimmedLine.startsWith('•')) {
+                                    return (
+                                      <div key={i} className="flex items-start gap-2.5 py-1">
+                                        <div className="mt-1 rounded-full bg-teal/20 p-0.5">
+                                          <Check className="h-3 w-3 text-teal" />
+                                        </div>
+                                        <span className="text-sm text-white/80">{trimmedLine.replace(/^[•\s]+/, '').trim()}</span>
+                                      </div>
+                                    );
+                                  }
+                                  // Regular text
+                                  else if (trimmedLine) {
+                                    return (
+                                      <p key={i} className="text-sm leading-relaxed text-white/70">
+                                        {trimmedLine}
+                                      </p>
+                                    );
+                                  }
+                                  return null;
+                                });
+                              }
+
+                              // Otherwise, use plan-based rendering
+                              lines.forEach((line) => {
+                                const trimmedLine = line.trim();
+                                
+                                // Check if it's a plan header
+                                if (trimmedLine.match(/^Plan \d+.*:$/)) {
+                                  if (currentPlan) {
+                                    plans.push(currentPlan);
+                                  }
+                                  currentPlan = { title: trimmedLine.replace(/:$/, ''), bullets: [] };
+                                  inPlans = true;
+                                }
+                                // Check if it's the "Both plans include:" section
+                                else if (trimmedLine === 'Both plans include:') {
+                                  if (currentPlan) {
+                                    plans.push(currentPlan);
+                                    currentPlan = null;
+                                  }
+                                  commonSection = { title: trimmedLine, bullets: [] };
+                                  inPlans = false;
+                                }
+                                // Bullet points
+                                else if (trimmedLine.startsWith('•')) {
+                                  const bulletText = trimmedLine.replace(/^[•\s]+/, '').trim();
+                                  if (currentPlan) {
+                                    currentPlan.bullets.push(bulletText);
+                                  } else if (commonSection) {
+                                    commonSection.bullets.push(bulletText);
+                                  }
+                                }
+                                // Intro text (before plans)
+                                else if (trimmedLine && !inPlans && !commonSection) {
+                                  introText.push(trimmedLine);
+                                }
+                              });
+
+                              // Push last plan if any
+                              if (currentPlan) {
+                                plans.push(currentPlan);
+                              }
+
+                              // Render intro text
+                              if (introText.length > 0) {
+                                elements.push(
+                                  <p key="intro" className="text-sm leading-relaxed text-white/70 mb-4">
+                                    {introText.join(' ')}
                                   </p>
                                 );
                               }
-                              return null;
-                            })}
+
+                              // Render plans side by side if we have exactly 2 plans
+                              if (plans.length === 2) {
+                                elements.push(
+                                  <div key="plans-grid" className="grid md:grid-cols-2 gap-4 mb-6">
+                                    {plans.map((plan, planIdx) => (
+                                      <div 
+                                        key={`plan-${planIdx}`}
+                                        className="rounded-2xl border border-teal/20 bg-teal/5 p-5"
+                                      >
+                                        <h4 className="text-sm font-bold text-teal mb-3">
+                                          {plan.title}
+                                        </h4>
+                                        <div className="space-y-2">
+                                          {plan.bullets.map((bullet, bulletIdx) => (
+                                            <div key={bulletIdx} className="flex items-start gap-2">
+                                              <div className="mt-1 rounded-full bg-teal/20 p-0.5 shrink-0">
+                                                <Check className="h-3 w-3 text-teal" />
+                                              </div>
+                                              <span className="text-xs text-white/80">{bullet}</span>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                );
+                              } else {
+                                // Fallback: render plans vertically
+                                plans.forEach((plan, planIdx) => {
+                                  elements.push(
+                                    <div key={`plan-v-${planIdx}`} className="mt-4 first:mt-0">
+                                      <h4 className="text-sm font-bold text-teal mb-2">{plan.title}</h4>
+                                      <div className="space-y-1">
+                                        {plan.bullets.map((bullet, bulletIdx) => (
+                                          <div key={bulletIdx} className="flex items-start gap-2.5 py-1">
+                                            <div className="mt-1 rounded-full bg-teal/20 p-0.5">
+                                              <Check className="h-3 w-3 text-teal" />
+                                            </div>
+                                            <span className="text-sm text-white/80">{bullet}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  );
+                                });
+                              }
+
+                              // Render common section
+                              const finalCommonSection = commonSection as PlanSection | null;
+                              if (finalCommonSection !== null) {
+                                elements.push(
+                                  <div key="common" className="pt-3 border-t border-white/10">
+                                    <h4 className="text-sm font-semibold text-white/90 mb-3">
+                                      {finalCommonSection.title}
+                                    </h4>
+                                    <div className="space-y-2">
+                                      {finalCommonSection.bullets.map((bullet: string, bulletIdx: number) => (
+                                        <div key={bulletIdx} className="flex items-start gap-2.5">
+                                          <div className="mt-1 rounded-full bg-teal/20 p-0.5">
+                                            <Check className="h-3 w-3 text-teal" />
+                                          </div>
+                                          <span className="text-sm text-white/80">{bullet}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              return elements;
+                            })()}
                           </div>
                         </div>
                         {isPricingCategory && (
@@ -1298,7 +1450,7 @@ export default function HomePage() {
                                 <span className="text-xs uppercase tracking-[0.2em] text-teal font-semibold">Flexible Terms</span>
                               </div>
                               <p className="text-xs text-white/60 leading-relaxed">
-                                No long-term contracts required. 14-day free trial available. Cancel anytime with 30 days notice.
+                                No long-term contracts. Cancel anytime with 30 days notice.
                               </p>
                             </div>
                           </div>
