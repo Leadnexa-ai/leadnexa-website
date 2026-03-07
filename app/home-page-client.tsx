@@ -26,7 +26,18 @@ import {
   Video,
 } from "lucide-react";
 
-// --- Data Definitions ---
+// --- Video URLs (Update these with your Vercel Blob URLs) ---
+// To get your URLs: vercel blob ls OR check Vercel Dashboard > Storage > Blob
+const VIDEO_URLS = {
+  whiteGloveProcess: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa_AI_-_The_White_Glove_Process_v8.mp4",
+  vsTraditionalReps: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20vs%20Traditional%20Sales%20Reps_%20Simple%20Comparison_1080p.mp4",
+  smarterProspecting: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20AI_%20Smarter%20Prospecting_1080p.mp4",
+  linkedinOutreach: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa%20LinkedIn%20Outreach%20Explainer_1080p.mp4",
+  coldEmailProcess: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa_Cold_Email_Process_with_Logo_v2.mp4",
+  linkedinSafety: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LinkedIn%20Account%20Safety%20with%20LeadNexa_1080p.mp4",
+  deliverabilityProtection: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/LeadNexa_%20LinkedIn%20Deliverability%20Protection_1080p.mp4",
+  scalingAgents: "https://q8whrotcvgvxhhth.public.blob.vercel-storage.com/Scaling%20LeadNexa%20Agents_1080p.mp4",
+};
 
 const valueProps = [
   {
@@ -1073,13 +1084,13 @@ export default function HomePage() {
                   {
                     q: "What is Leadnexa?",
                     a: "Leadnexa provides AI sales agents that act as an always-on SDR team, generating qualified B2B leads and meetings without hiring traditional staff.",
-                    videoPath: "/LeadNexa_AI_-_The_White_Glove_Process_v8.mp4",
+                    videoPath: VIDEO_URLS.whiteGloveProcess,
                     videoTitle: "What is Leadnexa"
                   },
                   {
                     q: "What are the key advantages of AI agents over traditional SDRs?",
                     a: "Agents cost less (from $750 for 2 vs. $6k-9k per SDR), ramp faster (4-14 days vs. 60-90), work 24/7 (168+ hrs/week), reach 300-500 contacts daily, require near-zero management, and deliver consistent results.",
-                    videoPath: "/LeadNexa vs Traditional Sales Reps_ Simple Comparison_1080p.mp4",
+                    videoPath: VIDEO_URLS.vsTraditionalReps,
                     videoTitle: "AI Agents vs Traditional SDRs"
                   },
                   {
@@ -1097,7 +1108,7 @@ export default function HomePage() {
                   {
                     q: "How do Leadnexa AI agents replace traditional sales team?",
                     a: "Unlike a traditional sales team that manually searches for leads, sends outreach messages, and tracks follow-ups, LeadNexa's AI automates these tasks at scale. The AI:\n• Identifies and qualifies high-potential prospects automatically\n• Sends personalized outreach and follow-ups without human delay\n• Classifies prospect intent so your team can filter and engage with only interested leads",
-                    videoPath: "/LeadNexa AI_ Smarter Prospecting_1080p.mp4",
+                    videoPath: VIDEO_URLS.smarterProspecting,
                     videoTitle: "AI Agent Workflows"
                   },
                   {
@@ -1117,13 +1128,13 @@ export default function HomePage() {
                   {
                     q: "How does LinkedIn outreach work with Leadnexa agents?",
                     a: "Agents build ICP-aligned lead lists, optimize and warm profiles, send personalized connects (up to 500/month per agent) with smart follow-ups, and route high-intent replies to your team.",
-                    videoPath: "/LeadNexa LinkedIn Outreach Explainer_1080p.mp4",
+                    videoPath: VIDEO_URLS.linkedinOutreach,
                     videoTitle: "LinkedIn Outreach Process"
                   },
                   {
                     q: "What is the process for cold email campaigns?",
                     a: "Agents build enriched ICP lists, write personalized sequences with follow-ups, execute safe outreach (up to 2,000 emails/month per agent once warmed), monitor deliverability, and route interested replies.",
-                    videoPath: "/LeadNexa_Cold_Email_Process_with_Logo_v2.mp4",
+                    videoPath: VIDEO_URLS.coldEmailProcess,
                     videoTitle: "Cold Email Campaigns"
                   },
                   {
@@ -1133,13 +1144,13 @@ export default function HomePage() {
                   {
                     q: "How does Leadnexa ensure LinkedIn account safety?",
                     a: "Leadnexa provides and manages high-quality accounts with brand positioning, ICP-aligned profiles, health checks, safe daily limits, and consistent outreach practices.",
-                    videoPath: "/LinkedIn Account Safety with LeadNexa_1080p.mp4",
+                    videoPath: VIDEO_URLS.linkedinSafety,
                     videoTitle: "LinkedIn Account Safety"
                   },
                   {
                     q: "How do you protect deliverability?",
                     a: "We protect deliverability through gradual warm-up, controlled sending volumes, and continuous engagement monitoring — ensuring long-term sender reputation.",
-                    videoPath: "/LeadNexa_ LinkedIn Deliverability Protection_1080p.mp4",
+                    videoPath: VIDEO_URLS.deliverabilityProtection,
                     videoTitle: "Deliverability Protection"
                   },
                   {
@@ -1149,7 +1160,7 @@ export default function HomePage() {
                   {
                     q: "How does scaling agents work for larger outreach?",
                     a: "Scale from 1-30 agents with volume pricing; e.g.:\n• 5 agents: 5 accounts, 2.5k connects, 10k emails\n• 20 agents: 20 accounts, 10k connects, 40k emails",
-                    videoPath: "/Scaling LeadNexa Agents_1080p.mp4",
+                    videoPath: VIDEO_URLS.scalingAgents,
                     videoTitle: "Scaling Agents"
                   }
                 ],
@@ -1157,19 +1168,19 @@ export default function HomePage() {
                   {
                     q: "What's included in each agent subscription?",
                     a: "Each AI agent includes:\n• 1 LinkedIn account\n• 2 email inboxes\n• Unlimited campaigns\n• Automated follow-ups\n• Dedicated support from your Success Manager",
-                    videoPath: "/videos/pricing-details.mp4",
+                    videoPath: VIDEO_URLS.pricingDetails,
                     videoTitle: "Pricing Breakdown"
                   },
                   {
                     q: "Can I cancel anytime?",
                     a: "Yes. We don't lock you into long-term contracts. Cancel anytime with 30 days notice. We also offer a 14-day free trial for new customers.",
-                    videoPath: "/videos/trial-cancellation.mp4",
+                    videoPath: VIDEO_URLS.trialCancellation,
                     videoTitle: "Trial & Cancellation"
                   },
                   {
                     q: "Do you offer volume discounts?",
                     a: "We offer transparent flat-rate pricing:\n• LinkedIn Scale: $750 for 2 agents, then $300 per additional agent\n• Multi-Channel Scale: $1,350 for 2 agents, then $550 per additional agent\n• Get 25% off your first month\n\nFor teams needing 30+ agents, contact us for custom enterprise pricing.",
-                    videoPath: "/videos/volume-pricing.mp4",
+                    videoPath: VIDEO_URLS.volumeDiscounts,
                     videoTitle: "Volume Discounts"
                   }
                 ]
