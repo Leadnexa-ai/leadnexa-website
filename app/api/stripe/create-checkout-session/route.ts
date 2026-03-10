@@ -182,7 +182,7 @@ export async function POST(request: Request) {
       metadata.client_id = clientId;
       idempotencyPrincipal = `client_${clientId}`;
       checkoutCustomerClientId = clientId;
-    } else {
+    } else if (authSession.session_type === "pending") {
       const pendingSignup = await getPendingSignupById(authSession.pending_signup_id);
       if (!pendingSignup) {
         return NextResponse.json({ error: "Pending signup not found." }, { status: 401 });
@@ -224,6 +224,11 @@ export async function POST(request: Request) {
       metadata.pending_signup_email = pendingSignup.email;
       idempotencyPrincipal = `pending_${pendingSignup.id}`;
       checkoutCustomerEmail = pendingSignup.email;
+    } else {
+      return NextResponse.json(
+        { error: "Internal admin sessions cannot start checkout." },
+        { status: 403 }
+      );
     }
 
     const idempotencyKey = getRequestIdempotencyKey(request, idempotencyPrincipal, plan, agents);
@@ -276,3 +281,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
+
+
+
+
+

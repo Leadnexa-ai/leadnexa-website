@@ -94,18 +94,22 @@ export default function LoginPage() {
     setInfo(null);
     setIsLoading(true);
     try {
+      const nextPath = getNextPath();
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, next: nextPath })
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(payload?.error ?? "Login failed.");
       }
 
-      const nextPath = getNextPath();
-      router.push(nextPath);
+      const destination =
+        typeof payload?.redirect_to === "string" && payload.redirect_to.trim().length > 0
+          ? payload.redirect_to
+          : nextPath;
+      router.push(destination);
       router.refresh();
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Login failed.";

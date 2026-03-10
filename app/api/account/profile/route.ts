@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import {
   type AppSessionClaims,
+  getInternalAdminSessionFromCookie,
   getSessionFromCookie,
   setSessionCookie,
   signSessionToken,
   verifySessionToken
 } from "../../../../lib/auth-session";
+import { getInternalAdminById } from "../../../../lib/internal-admin";
 import { createServerSupabase } from "../../../../lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -47,7 +49,7 @@ function getSessionFromRequest(request: Request) {
   if (bearer) {
     return verifySessionToken(bearer);
   }
-  return getSessionFromCookie();
+  return getInternalAdminSessionFromCookie() ?? getSessionFromCookie();
 }
 
 async function promotePendingSessionIfActivated(input: {
@@ -117,6 +119,31 @@ export async function GET(request: Request) {
   const promotedSession = await promotePendingSessionIfActivated({ session, supabase });
   if (promotedSession) {
     session = promotedSession;
+  }
+
+  if (session.session_type === "internal_admin") {
+    const internalAdmin = await getInternalAdminById({
+      supabase,
+      internalAdminUserId: session.internal_admin_user_id
+    });
+
+    if (!internalAdmin?.id || !internalAdmin.is_active) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    return NextResponse.json({
+      session_type: "internal_admin",
+      email: internalAdmin.email,
+      account_name: internalAdmin.full_name ?? "LeadNexa Support",
+      subscription: {
+        is_subscribed: false,
+        status: null,
+        agents: null,
+        price_id: null,
+        current_period_end: null,
+        cancel_at_period_end: false
+      }
+    });
   }
 
   if (session.session_type === "app") {
@@ -202,6 +229,13 @@ export async function PATCH(request: Request) {
   const session = getSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  }
+
+  if (session.session_type === "internal_admin") {
+    return NextResponse.json(
+      { error: "Internal admin profiles are managed separately." },
+      { status: 403 }
+    );
   }
 
   try {

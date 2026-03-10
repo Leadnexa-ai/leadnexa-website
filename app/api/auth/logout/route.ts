@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { clearSessionCookie } from "../../../../lib/auth-session";
+import {
+  clearInternalAdminSessionCookie,
+  clearSessionCookie
+} from "../../../../lib/auth-session";
 
 export const runtime = "nodejs";
 
@@ -48,15 +51,20 @@ function resolveNextUrl(request: Request): string {
   return "/";
 }
 
+function clearAllSessionCookies(response: NextResponse): void {
+  clearSessionCookie(response);
+  clearInternalAdminSessionCookie(response);
+}
+
 export async function POST() {
   const response = NextResponse.json({ ok: true });
-  clearSessionCookie(response);
+  clearAllSessionCookies(response);
   return response;
 }
 
 export async function GET(request: Request) {
   const next = resolveNextUrl(request);
   const response = NextResponse.redirect(next);
-  clearSessionCookie(response);
+  clearAllSessionCookies(response);
   return response;
 }

@@ -11,6 +11,8 @@ type SiteHeaderProps = {
   showIntegrations?: boolean;
 };
 
+type SessionType = "app" | "pending" | "internal_admin" | null;
+
 export default function SiteHeader({
   anchorPrefix = "",
   loginNext = "/#pricing",
@@ -22,9 +24,11 @@ export default function SiteHeader({
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authResolved, setAuthResolved] = useState(false);
   const [companyName, setCompanyName] = useState<string>("");
+  const [sessionType, setSessionType] = useState<SessionType>(null);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement | null>(null);
   const dashboardUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "https://app.leadnexa.ai").replace(/\/$/, "");
+  const websiteDashboardPath = "/support/portal";
 
   const withPrefix = (hash: string) => `${anchorPrefix}${hash}`;
   const navLinks = [
@@ -34,6 +38,9 @@ export default function SiteHeader({
     ...(showIntegrations ? [{ label: "Integrations", href: withPrefix("#integrations") }] : []),
     { label: "Pricing", href: withPrefix("#pricing") }
   ];
+
+  const dashboardDestination =
+    sessionType === "internal_admin" ? websiteDashboardPath : `${dashboardUrl}/portal`;
 
   useEffect(() => {
     let isMounted = true;
@@ -48,6 +55,7 @@ export default function SiteHeader({
         if (!response.ok) {
           setIsAuthenticated(false);
           setCompanyName("");
+          setSessionType(null);
           return;
         }
 
@@ -61,10 +69,18 @@ export default function SiteHeader({
 
         setIsAuthenticated(true);
         setCompanyName(normalizedCompanyName);
+        setSessionType(
+          payload?.session_type === "app" ||
+            payload?.session_type === "pending" ||
+            payload?.session_type === "internal_admin"
+            ? payload.session_type
+            : null
+        );
       } catch {
         if (isMounted) {
           setIsAuthenticated(false);
           setCompanyName("");
+          setSessionType(null);
         }
       } finally {
         if (isMounted) {
@@ -120,6 +136,7 @@ export default function SiteHeader({
 
       setIsAuthenticated(false);
       setCompanyName("");
+      setSessionType(null);
       setIsAccountMenuOpen(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unable to log out right now.";
@@ -163,11 +180,11 @@ export default function SiteHeader({
                         type="button"
                         onClick={() => {
                           setIsAccountMenuOpen(false);
-                          window.location.assign(`${dashboardUrl}/portal`);
+                          window.location.assign(dashboardDestination);
                         }}
                         className="mb-1 w-full rounded-lg px-3 py-2 text-left text-sm font-semibold text-white transition hover:bg-white/10"
                       >
-                        Go to Dashboard
+                        {sessionType === "internal_admin" ? "Client Access" : "Go to Dashboard"}
                       </button>
                       <button
                         type="button"
@@ -253,11 +270,11 @@ export default function SiteHeader({
                         type="button"
                         onClick={() => {
                           setIsMobileMenuOpen(false);
-                          window.location.assign(`${dashboardUrl}/portal`);
+                          window.location.assign(dashboardDestination);
                         }}
                         className="rounded-full border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-teal/40 hover:bg-white/10"
                       >
-                        Go to Dashboard
+                        {sessionType === "internal_admin" ? "Client Access" : "Go to Dashboard"}
                       </button>
                       <button
                         type="button"

@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import {
   type AppSessionClaims,
+  getInternalAdminSessionFromCookie,
   getSessionFromCookie,
   setSessionCookie,
   signSessionToken
 } from "../../../lib/auth-session";
+import { getInternalAdminById } from "../../../lib/internal-admin";
 import { createServerSupabase } from "../../../lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -56,7 +58,7 @@ async function promotePendingSessionIfActivated(input: {
 }
 
 export async function GET() {
-  let session = getSessionFromCookie();
+  let session = getInternalAdminSessionFromCookie() ?? getSessionFromCookie();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
@@ -65,6 +67,25 @@ export async function GET() {
   const promotedSession = await promotePendingSessionIfActivated({ session, supabase });
   if (promotedSession) {
     session = promotedSession;
+  }
+
+  if (session.session_type === "internal_admin") {
+    const internalAdmin = await getInternalAdminById({
+      supabase,
+      internalAdminUserId: session.internal_admin_user_id
+    });
+
+    if (!internalAdmin?.id || !internalAdmin.is_active) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    return NextResponse.json({
+      session_type: "internal_admin",
+      email: internalAdmin.email,
+      company_name: internalAdmin.full_name ?? "LeadNexa Support",
+      account_name: internalAdmin.full_name ?? "LeadNexa Support",
+      role: session.role
+    });
   }
 
   if (session.session_type === "app") {

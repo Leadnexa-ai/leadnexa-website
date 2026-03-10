@@ -1,6 +1,13 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { setSessionCookie, signSessionToken } from "../../../../lib/auth-session";
+import {
+  clearInternalAdminSessionCookie,
+  setInternalAdminSessionCookie,
+  setSessionCookie,
+  signSessionToken
+} from "../../../../lib/auth-session";
+import { sanitizeRedirectTarget } from "../../../../lib/auth-redirect";
+import { authenticateInternalAdmin } from "../../../../lib/internal-admin";
 import { createServerSupabase } from "../../../../lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -8,10 +15,16 @@ export const runtime = "nodejs";
 type LoginBody = {
   email?: string;
   password?: string;
+  next?: string;
 };
 
 function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
+}
+
+function getDefaultPortalTarget(): string {
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3001").trim().replace(/\/$/, "");
+  return `${appUrl}/portal`;
 }
 
 export async function POST(request: Request) {
@@ -19,12 +32,31 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as LoginBody;
     const email = normalizeEmail(String(body.email ?? ""));
     const password = String(body.password ?? "");
+    const nextTarget = sanitizeRedirectTarget(
+      String(body.next ?? getDefaultPortalTarget()),
+      new URL(request.url).origin
+    );
 
     if (!email || !password) {
       return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
     }
 
     const supabase = createServerSupabase();
+    const internalAdmin = await authenticateInternalAdmin({ supabase, email, password });
+    if (internalAdmin?.id) {
+      const token = signSessionToken({
+        session_type: "internal_admin",
+        email: internalAdmin.email,
+        internal_admin_user_id: internalAdmin.id,
+        role: "support_admin"
+      });
+      const redirectTo = `/support/portal?next=${encodeURIComponent(nextTarget)}`;
+      const response = NextResponse.json({ ok: true, redirect_to: redirectTo });
+      setSessionCookie(response, token);
+      setInternalAdminSessionCookie(response, token);
+      return response;
+    }
+
     const userLookup = await supabase
       .from("app_users")
       .select("id, client_id, email, password_hash, role, is_active, created_at")
@@ -92,6 +124,7 @@ export async function POST(request: Request) {
 
     const response = NextResponse.json({ ok: true });
     setSessionCookie(response, token);
+    clearInternalAdminSessionCookie(response);
     return response;
   } catch (error) {
     const message = error instanceof Error ? error.message : "Login failed.";

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
 export const SESSION_COOKIE_NAME = "leadnexa_session";
+export const INTERNAL_ADMIN_SESSION_COOKIE_NAME = "leadnexa_internal_admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 type BaseSessionClaims = {
@@ -21,7 +22,16 @@ export type PendingSessionClaims = BaseSessionClaims & {
   pending_signup_id: string;
 };
 
-export type SessionClaims = AppSessionClaims | PendingSessionClaims;
+export type InternalAdminSessionClaims = BaseSessionClaims & {
+  session_type: "internal_admin";
+  internal_admin_user_id: string;
+  role: "support_admin";
+};
+
+export type SessionClaims =
+  | AppSessionClaims
+  | PendingSessionClaims
+  | InternalAdminSessionClaims;
 
 function getCookieDomain(): string | undefined {
   const raw = (process.env.SESSION_COOKIE_DOMAIN ?? "").trim();
@@ -73,6 +83,19 @@ export function verifySessionToken(token: string): SessionClaims | null {
     }
 
     if (
+      payload.session_type === "internal_admin" &&
+      typeof payload.internal_admin_user_id === "string" &&
+      payload.role === "support_admin"
+    ) {
+      return {
+        session_type: "internal_admin",
+        email: payload.email,
+        internal_admin_user_id: payload.internal_admin_user_id,
+        role: "support_admin"
+      };
+    }
+
+    if (
       payload.session_type === "pending" &&
       typeof payload.pending_signup_id === "string"
     ) {
@@ -89,17 +112,35 @@ export function verifySessionToken(token: string): SessionClaims | null {
   }
 }
 
-export function getSessionFromCookie(): SessionClaims | null {
-  const token = cookies().get(SESSION_COOKIE_NAME)?.value;
+export function getSessionFromCookie(cookieName = SESSION_COOKIE_NAME): SessionClaims | null {
+  const token = cookies().get(cookieName)?.value;
   if (!token) {
     return null;
   }
   return verifySessionToken(token);
 }
 
-export function setSessionCookie(response: NextResponse, token: string): void {
+export function getInternalAdminSessionFromCookie(): InternalAdminSessionClaims | null {
+  const internalSession = getSessionFromCookie(INTERNAL_ADMIN_SESSION_COOKIE_NAME);
+  if (internalSession?.session_type === "internal_admin") {
+    return internalSession;
+  }
+
+  const primarySession = getSessionFromCookie();
+  if (primarySession?.session_type === "internal_admin") {
+    return primarySession;
+  }
+
+  return null;
+}
+
+export function setSessionCookie(
+  response: NextResponse,
+  token: string,
+  cookieName = SESSION_COOKIE_NAME
+): void {
   response.cookies.set({
-    name: SESSION_COOKIE_NAME,
+    name: cookieName,
     value: token,
     httpOnly: true,
     sameSite: "lax",
@@ -110,9 +151,13 @@ export function setSessionCookie(response: NextResponse, token: string): void {
   });
 }
 
-export function clearSessionCookie(response: NextResponse): void {
+export function setInternalAdminSessionCookie(response: NextResponse, token: string): void {
+  setSessionCookie(response, token, INTERNAL_ADMIN_SESSION_COOKIE_NAME);
+}
+
+export function clearSessionCookie(response: NextResponse, cookieName = SESSION_COOKIE_NAME): void {
   const baseCookie = {
-    name: SESSION_COOKIE_NAME,
+    name: cookieName,
     value: "",
     httpOnly: true as const,
     sameSite: "lax" as const,
@@ -129,6 +174,9 @@ export function clearSessionCookie(response: NextResponse): void {
     });
   }
 
-  // Also clear host-only cookie variant for users who still have legacy scoped cookies.
   response.cookies.set(baseCookie);
+}
+
+export function clearInternalAdminSessionCookie(response: NextResponse): void {
+  clearSessionCookie(response, INTERNAL_ADMIN_SESSION_COOKIE_NAME);
 }
