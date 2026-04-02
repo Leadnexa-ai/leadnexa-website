@@ -64,6 +64,20 @@ function getApolloApiKey(): string {
 async function apolloRequest<T>(path: string, init: ApolloRequestInit = {}): Promise<T> {
   const url = `https://api.apollo.io${path}`;
   const method = init.method ?? "POST";
+  const requestBody = method === "GET" ? undefined : JSON.stringify(init.body ?? {});
+
+  // ===== DEBUG: Log the request =====
+  console.log("\n========== APOLLO API REQUEST DEBUG ==========");
+  console.log(`Method: ${method}`);
+  console.log(`URL: ${url}`);
+  console.log(`Headers:`, {
+    "Content-Type": "application/json",
+    "x-api-key": "***HIDDEN***"
+  });
+  if (requestBody) {
+    console.log(`Request Body:`, JSON.parse(requestBody));
+  }
+  console.log("===========================================\n");
 
   const response = await fetch(url, {
     method,
@@ -71,10 +85,11 @@ async function apolloRequest<T>(path: string, init: ApolloRequestInit = {}): Pro
       "Content-Type": "application/json",
       "x-api-key": getApolloApiKey()
     },
-    body: method === "GET" ? undefined : JSON.stringify(init.body ?? {})
+    body: requestBody
   });
 
   const bodyText = await response.text();
+
   if (!response.ok) {
     throw new ApolloApiError(`Apollo request failed (${response.status})`, response.status, bodyText);
   }

@@ -10,7 +10,7 @@ import { createServerSupabase } from "../../../lib/supabase-admin";
 export const runtime = "nodejs";
 
 async function promotePendingSessionIfActivated(input: {
-  session: ReturnType<typeof getSessionFromCookie>;
+  session: Awaited<ReturnType<typeof getSessionFromCookie>>;
   supabase: ReturnType<typeof createServerSupabase>;
 }): Promise<AppSessionClaims | null> {
   const { session, supabase } = input;
@@ -56,7 +56,7 @@ async function promotePendingSessionIfActivated(input: {
 }
 
 export async function GET() {
-  let session = getSessionFromCookie();
+  let session = await getSessionFromCookie();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
