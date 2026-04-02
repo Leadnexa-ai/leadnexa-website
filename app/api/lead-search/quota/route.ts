@@ -66,6 +66,9 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
+  if (session.session_type !== "app") {
+    return NextResponse.json({ error: "Only activated app users can check quota." }, { status: 403 });
+  }
 
   try {
     const today = new Date().toISOString().slice(0, 10);

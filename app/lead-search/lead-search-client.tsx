@@ -125,7 +125,9 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
         throw new Error(payload.error ?? "Failed to generate snapshot.");
       }
       setResult(payload as RunResponse);
-      setQuota(payload.quota);
+      if (payload.quota) {
+        setQuota(payload.quota);
+      }
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Failed to generate snapshot.";
       setError(message);
