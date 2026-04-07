@@ -182,6 +182,20 @@ async function writeDailyUsage(userId: string, usageDate: string, newCount: numb
   }
 }
 
+async function deletePreviousDayUsage(userId: string, usageDate: string): Promise<void> {
+  const supabase = createServerSupabase();
+  const result = await supabase
+    .from("lead_search_daily_usage")
+    .delete()
+    .eq("user_id", userId)
+    .neq("usage_date", usageDate);
+
+  if (result.error) {
+    // Log the error but don't throw - this is a cleanup operation
+    console.warn(`Failed to delete previous day usage records: ${result.error.message}`);
+  }
+}
+
 async function insertEvent(input: {
   userId: string;
   clientId: string;
@@ -189,13 +203,16 @@ async function insertEvent(input: {
   filtersHash: string;
 }): Promise<void> {
   const supabase = createServerSupabase();
-  const result = await supabase.from("lead_search_events").insert({
-    user_id: input.userId,
-    client_id: input.clientId,
-    result_count: input.resultCount,
-    filters_hash: input.filtersHash,
-    cta_shown: true
-  });
+  const result = await supabase.from("lead_search_events").upsert(
+    {
+      user_id: input.userId,
+      client_id: input.clientId,
+      result_count: input.resultCount,
+      filters_hash: input.filtersHash,
+      cta_shown: true
+    },
+    { onConflict: "user_id" }
+  );
 
   if (result.error) {
     // Keep MVP request successful even when optional analytics table is not available yet.
@@ -204,7 +221,7 @@ async function insertEvent(input: {
 }
 
 export async function POST(request: Request) {
-  const session = getSessionFromCookie();
+  const session = await getSessionFromCookie();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
@@ -223,6 +240,10 @@ export async function POST(request: Request) {
     }
 
     const today = new Date().toISOString().slice(0, 10);
+    
+    // Clean up previous day records for this user
+    await deletePreviousDayUsage(session.user_id, today);
+    
     const usedToday = await readDailyUsage(session.user_id, today);
     const userLimit = await readUserLimit(session.user_id);
     if (!userLimit.isUnlimited && usedToday >= userLimit.dailyLimit) {
@@ -277,8 +298,12 @@ export async function POST(request: Request) {
       })
     }));
 
-    const newCount = usedToday + 1;
-    await writeDailyUsage(session.user_id, today, newCount);
+    // Only decrement quota if results were found
+    let finalUsedCount = usedToday;
+    if (preview.length > 0) {
+      finalUsedCount = usedToday + 1;
+      await writeDailyUsage(session.user_id, today, finalUsedCount);
+    }
 
     const filtersHash = createHash("sha256").update(JSON.stringify(appliedFilters)).digest("hex");
     await insertEvent({
@@ -290,9 +315,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       quota: {
-        used_today: newCount,
+        used_today: finalUsedCount,
         limit: userLimit.isUnlimited ? null : userLimit.dailyLimit,
-        remaining: userLimit.isUnlimited ? null : Math.max(0, userLimit.dailyLimit - newCount)
+        remaining: userLimit.isUnlimited ? null : Math.max(0, userLimit.dailyLimit - finalUsedCount)
       },
       applied_filters: appliedFilters,
       preview,

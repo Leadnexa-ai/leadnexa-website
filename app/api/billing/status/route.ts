@@ -24,7 +24,7 @@ function pickMostRelevantSubscription(rows: BillingRow[]): BillingRow | null {
 }
 
 export async function GET() {
-  const session = getSessionFromCookie();
+  const session = await getSessionFromCookie();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }

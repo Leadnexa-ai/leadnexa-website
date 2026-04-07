@@ -15,8 +15,8 @@ export const metadata: Metadata = {
   }
 };
 
-export default function LeadSearchPage() {
-  const session = getSessionFromCookie();
+export default async function LeadSearchPage() {
+  const session = await getSessionFromCookie();
   if (!session) {
     redirect(`/login?next=${encodeURIComponent("/lead-search")}`);
   }

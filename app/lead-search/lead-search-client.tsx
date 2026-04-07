@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type LeadSearchFormState = {
   companyName: string;
   companyWebsite: string;
   productDescription: string;
   targetMarkets: string;
-  exclusions: string;
+  // exclusions: string;
 };
 
 type PreviewLead = {
@@ -42,12 +42,18 @@ type RunResponse = {
   };
 };
 
+type QuotaInfo = {
+  used_today: number;
+  limit: number | null;
+  remaining: number | null;
+};
+
 const INITIAL_FORM: LeadSearchFormState = {
   companyName: "",
   companyWebsite: "",
   productDescription: "",
-  targetMarkets: "",
-  exclusions: ""
+  targetMarkets: ""
+  // exclusions: ""
 };
 
 function parseMultiValueInput(value: string): string[] {
@@ -63,16 +69,34 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RunResponse | null>(null);
+  const [quota, setQuota] = useState<QuotaInfo | null>(null);
+
+  useEffect(() => {
+    const fetchQuota = async () => {
+      try {
+        const response = await fetch("/api/lead-search/quota");
+        if (response.ok) {
+          const data = (await response.json()) as QuotaInfo;
+          setQuota(data);
+        }
+      } catch {
+        // Silently fail - quota will show default message
+      }
+    };
+
+    fetchQuota();
+  }, []);
 
   const usedQuotaText = useMemo(() => {
-    if (!result) {
+    const currentQuota = result?.quota ?? quota;
+    if (!currentQuota) {
       return "Daily usage limit: 3 snapshots";
     }
-    if (result.quota.limit === null) {
-      return `Daily usage: ${result.quota.used_today} (unlimited for this account)`;
+    if (currentQuota.limit === null) {
+      return `Daily usage: ${currentQuota.used_today} (unlimited for this account)`;
     }
-    return `Daily usage: ${result.quota.used_today}/${result.quota.limit} (remaining ${result.quota.remaining})`;
-  }, [result]);
+    return `Daily usage: ${currentQuota.used_today}/${currentQuota.limit} (remaining ${currentQuota.remaining})`;
+  }, [result, quota]);
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,8 +114,8 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
           company_name: form.companyName,
           company_website: form.companyWebsite,
           product_description: form.productDescription,
-          target_markets: parseMultiValueInput(form.targetMarkets),
-          exclusions: parseMultiValueInput(form.exclusions)
+          target_markets: parseMultiValueInput(form.targetMarkets)
+          // exclusions: parseMultiValueInput(form.exclusions)
         })
       });
       const payload = (await response.json().catch(() => ({}))) as Partial<RunResponse> & {
@@ -101,10 +125,18 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
         throw new Error(payload.error ?? "Failed to generate snapshot.");
       }
       setResult(payload as RunResponse);
+      if (payload.quota) {
+        setQuota(payload.quota);
+      }
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Failed to generate snapshot.";
       setError(message);
-      setResult(null);
+      
+      // Keep previous result if daily limit reached, only clear for other errors
+      const isDailyLimitError = message.includes("Daily limit reached");
+      if (!isDailyLimitError) {
+        setResult(null);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +153,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-teal">Sales Snapshot</p>
             <h1 className="mt-2 text-4xl font-bold">Target Market Snapshot</h1>
             <p className="mt-3 max-w-2xl text-sm text-slate-300">
-              Validate reachable market with AI-generated Apollo filters and a controlled preview. This is not a lead
+              Validate reachable market with AI-generated searches based on your inputs and a controlled preview. This is not a lead
               database.
             </p>
           </div>
@@ -193,14 +225,14 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Exclusions (optional)</label>
+            {/* <label className="mt-4 block text-sm font-medium text-slate-200">Exclusions (optional)</label>
             <textarea
               value={form.exclusions}
               onChange={(event) => setForm((prev) => ({ ...prev, exclusions: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
               placeholder="agency, freelancer"
               disabled={isPendingSession || isLoading}
-            />
+            /> */}
 
             <p className="mt-4 text-xs text-slate-400">{usedQuotaText}</p>
             {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
