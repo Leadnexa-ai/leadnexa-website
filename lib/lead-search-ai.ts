@@ -148,7 +148,7 @@ const system = [
     "- person_locations: Extract ONLY specific country or city names from target_markets (e.g., 'United States', 'Germany', 'London, UK'). NEVER include locations in q_keywords.",
     "- person_titles: B2B buyer job titles only (Manager, Director, VP, etc.)",
     "- organization_num_employees_ranges: Size ranges like '1-50', '51-200', '201-500', '501-1000', '1001-5000', '5001-10000', '10001+'",
-    "- q_keywords: Extract ONLY TWO main keywords from product_description. two words only, e.g., 'vending machines', 'b2b meeting', 'software', 'consulting'. NO phrases, NO locations, NO multiple words.",
+    "- q_keywords: Extract ONLY two keywords from the whole sentence product_description. two words only, e.g., 'vending machines', 'b2b meeting', 'software', 'consulting'. NO phrases, NO locations, NO multiple words.",
     "",
     "Return JSON only with keys:",
     "person_titles: string[]",

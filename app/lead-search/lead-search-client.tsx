@@ -8,7 +8,7 @@ type LeadSearchFormState = {
   companyWebsite: string;
   productDescription: string;
   targetMarkets: string;
-  exclusions: string;
+  // exclusions: string;
 };
 
 type PreviewLead = {
@@ -52,8 +52,8 @@ const INITIAL_FORM: LeadSearchFormState = {
   companyName: "",
   companyWebsite: "",
   productDescription: "",
-  targetMarkets: "",
-  exclusions: ""
+  targetMarkets: ""
+  // exclusions: ""
 };
 
 function parseMultiValueInput(value: string): string[] {
@@ -114,8 +114,8 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
           company_name: form.companyName,
           company_website: form.companyWebsite,
           product_description: form.productDescription,
-          target_markets: parseMultiValueInput(form.targetMarkets),
-          exclusions: parseMultiValueInput(form.exclusions)
+          target_markets: parseMultiValueInput(form.targetMarkets)
+          // exclusions: parseMultiValueInput(form.exclusions)
         })
       });
       const payload = (await response.json().catch(() => ({}))) as Partial<RunResponse> & {
@@ -225,14 +225,14 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
               disabled={isPendingSession || isLoading}
             />
 
-            <label className="mt-4 block text-sm font-medium text-slate-200">Exclusions (optional)</label>
+            {/* <label className="mt-4 block text-sm font-medium text-slate-200">Exclusions (optional)</label>
             <textarea
               value={form.exclusions}
               onChange={(event) => setForm((prev) => ({ ...prev, exclusions: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
               placeholder="agency, freelancer"
               disabled={isPendingSession || isLoading}
-            />
+            /> */}
 
             <p className="mt-4 text-xs text-slate-400">{usedQuotaText}</p>
             {error && <p className="mt-3 text-sm text-rose-300">{error}</p>}
