@@ -37,7 +37,8 @@ export default function SiteHeader({
     { label: "Why AI Agents", href: withPrefix("#comparison") },
     ...(showIntegrations ? [{ label: "Integrations", href: withPrefix("#integrations") }] : []),
     { label: "FAQ", href: withPrefix("#faq") },
-    { label: "Pricing", href: withPrefix("#pricing") }
+    { label: "Pricing", href: withPrefix("#pricing") },
+    { label: "Target Snapshot", href: "/lead-search" }
   ];
 
   const dashboardDestination =
