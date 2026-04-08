@@ -133,7 +133,7 @@ async function resolveCheckoutCustomerId(input: {
 
 export async function POST(request: Request) {
   try {
-    const authSession = getSessionFromCookie();
+    const authSession = await getSessionFromCookie();
     if (!authSession) {
       return NextResponse.json({ error: "You must be logged in to start checkout." }, { status: 401 });
     }

@@ -112,8 +112,9 @@ export function verifySessionToken(token: string): SessionClaims | null {
   }
 }
 
-export function getSessionFromCookie(cookieName = SESSION_COOKIE_NAME): SessionClaims | null {
-  const token = cookies().get(cookieName)?.value;
+export async function getSessionFromCookie(cookieName = SESSION_COOKIE_NAME): Promise<SessionClaims | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(cookieName)?.value;
   if (!token) {
     return null;
   }

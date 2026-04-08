@@ -67,7 +67,7 @@ export async function GET(request: Request) {
     return buildLoginRedirect(requestUrl, "Missing OAuth state or code.");
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const expectedState = cookieStore.get(GOOGLE_STATE_COOKIE)?.value ?? "";
   const rawNextCookie = cookieStore.get(GOOGLE_NEXT_COOKIE)?.value ?? "";
   let decodedNext = "/";
