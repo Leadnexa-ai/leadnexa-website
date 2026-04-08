@@ -250,6 +250,13 @@ export default function ProfilePage() {
           >
             {isSaving ? "Saving..." : "Save"}
           </button>
+
+          <Link
+            href="/lead-search"
+            className="mt-3 inline-flex w-full items-center justify-center rounded-xl border border-white/25 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+          >
+            Open Target Market Snapshot
+          </Link>
         </form>
       </div>
     </main>

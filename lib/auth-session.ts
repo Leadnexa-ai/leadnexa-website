@@ -112,21 +112,22 @@ export function verifySessionToken(token: string): SessionClaims | null {
   }
 }
 
-export function getSessionFromCookie(cookieName = SESSION_COOKIE_NAME): SessionClaims | null {
-  const token = cookies().get(cookieName)?.value;
+export async function getSessionFromCookie(cookieName = SESSION_COOKIE_NAME): Promise<SessionClaims | null> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(cookieName)?.value;
   if (!token) {
     return null;
   }
   return verifySessionToken(token);
 }
 
-export function getInternalAdminSessionFromCookie(): InternalAdminSessionClaims | null {
-  const internalSession = getSessionFromCookie(INTERNAL_ADMIN_SESSION_COOKIE_NAME);
+export async function getInternalAdminSessionFromCookie(): Promise<InternalAdminSessionClaims | null> {
+  const internalSession = await getSessionFromCookie(INTERNAL_ADMIN_SESSION_COOKIE_NAME);
   if (internalSession?.session_type === "internal_admin") {
     return internalSession;
   }
 
-  const primarySession = getSessionFromCookie();
+  const primarySession = await getSessionFromCookie();
   if (primarySession?.session_type === "internal_admin") {
     return primarySession;
   }

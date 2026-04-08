@@ -44,16 +44,16 @@ function extractBearerToken(request: Request): string | null {
   return value.trim();
 }
 
-function getSessionFromRequest(request: Request) {
+async function getSessionFromRequest(request: Request) {
   const bearer = extractBearerToken(request);
   if (bearer) {
     return verifySessionToken(bearer);
   }
-  return getInternalAdminSessionFromCookie() ?? getSessionFromCookie();
+  return (await getInternalAdminSessionFromCookie()) ?? (await getSessionFromCookie());
 }
 
 async function promotePendingSessionIfActivated(input: {
-  session: ReturnType<typeof getSessionFromRequest>;
+  session: Awaited<ReturnType<typeof getSessionFromRequest>>;
   supabase: ReturnType<typeof createServerSupabase>;
 }): Promise<AppSessionClaims | null> {
   const { session, supabase } = input;
@@ -110,7 +110,7 @@ function sanitizeAccountName(value: unknown): string {
 }
 
 export async function GET(request: Request) {
-  let session = getSessionFromRequest(request);
+  let session = await getSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
@@ -226,7 +226,7 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const session = getSessionFromRequest(request);
+  const session = await getSessionFromRequest(request);
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }

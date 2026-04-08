@@ -32,7 +32,7 @@ function buildLoginRedirectTarget(next: string): string {
 export default async function SupportPortalPage({ searchParams }: SupportPortalPageProps) {
   const next = String(searchParams?.next ?? getDefaultPortalTarget()).trim() || getDefaultPortalTarget();
   const error = String(searchParams?.error ?? "").trim();
-  const session = getInternalAdminSessionFromCookie();
+  const session = await getInternalAdminSessionFromCookie();
 
   if (!session || session.session_type !== "internal_admin") {
     redirect(buildLoginRedirectTarget(next));

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
     String(formData.get("next") ?? getDefaultPortalTarget()),
     new URL(request.url).origin
   );
-  const internalSession = getInternalAdminSessionFromCookie();
+  const internalSession = await getInternalAdminSessionFromCookie();
 
   if (!internalSession || internalSession.session_type !== "internal_admin") {
     return NextResponse.redirect(
