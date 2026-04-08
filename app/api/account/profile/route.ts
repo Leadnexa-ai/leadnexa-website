@@ -49,7 +49,7 @@ async function getSessionFromRequest(request: Request) {
   if (bearer) {
     return verifySessionToken(bearer);
   }
-  return await getInternalAdminSessionFromCookie() ?? getSessionFromCookie();
+  return (await getInternalAdminSessionFromCookie()) ?? (await getSessionFromCookie());
 }
 
 async function promotePendingSessionIfActivated(input: {

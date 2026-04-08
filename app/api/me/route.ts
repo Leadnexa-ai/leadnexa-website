@@ -58,7 +58,7 @@ async function promotePendingSessionIfActivated(input: {
 }
 
 export async function GET() {
-  let session = await getInternalAdminSessionFromCookie() ?? getSessionFromCookie();
+  let session = (await getInternalAdminSessionFromCookie()) ?? (await getSessionFromCookie());
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
