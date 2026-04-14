@@ -107,17 +107,10 @@ function buildRelaxedFilters(
   baseFilters: ApolloPeopleSearchFilters,
   questionnaire: LeadSearchQuestionnaire
 ): ApolloPeopleSearchFilters {
-  const fallbackKeywords = [questionnaire.product_description, ...questionnaire.target_markets]
-    .map((item) => sanitizeString(item, 80))
-    .filter(Boolean)
-    .join(" ")
-    .slice(0, 240);
-
   return {
-    person_titles: Array.isArray(baseFilters.person_titles) ? baseFilters.person_titles.slice(0, 4) : [],
     person_locations: [],
     organization_num_employees_ranges: [],
-    q_keywords: fallbackKeywords || baseFilters.q_keywords || ""
+    q_organization_keyword_tags: []
   };
 }
 
@@ -173,13 +166,35 @@ async function writeDailyUsage(userId: string, usageDate: string, newCount: numb
     usage_date: usageDate,
     used_count: newCount
   };
-  const result = await supabase
-    .from("lead_search_daily_usage")
-    .upsert(payload, { onConflict: "user_id,usage_date" });
 
-  if (result.error) {
-    throw new Error(`Failed to update daily usage: ${result.error.message}`);
+  console.log(`[Quota] Attempting insert with payload:`, JSON.stringify(payload));
+
+  // First try to insert new record
+  const insertResult = await supabase
+    .from("lead_search_daily_usage")
+    .insert([payload]);
+
+  if (!insertResult.error) {
+    console.log(`[Quota] ✓ Inserted new usage record for user ${userId} on ${usageDate}`);
+    return;
   }
+
+  // If insert fails (likely duplicate), try update instead
+  console.log(`[Quota] Insert failed, code:`, insertResult.error.code, `message:`, insertResult.error.message);
+  console.log(`[Quota] Attempting update for user ${userId} on ${usageDate}`);
+  
+  const updateResult = await supabase
+    .from("lead_search_daily_usage")
+    .update({ used_count: newCount })
+    .eq("user_id", userId)
+    .eq("usage_date", usageDate);
+
+  if (updateResult.error) {
+    console.error(`[Quota] ✗ Both insert and update failed:`, updateResult.error);
+    throw new Error(`Failed to update daily usage: ${updateResult.error.message}`);
+  }
+
+  console.log(`[Quota] ✓ Updated usage record for user ${userId} on ${usageDate}`);
 }
 
 async function deletePreviousDayUsage(userId: string, usageDate: string): Promise<void> {
@@ -225,28 +240,71 @@ export async function POST(request: Request) {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-  if (session.session_type !== "app") {
-    return NextResponse.json({ error: "Only activated app users can run snapshots." }, { status: 403 });
+
+  let userId: string;
+
+  if (session.session_type === "app") {
+    userId = (session as any).user_id;
+  } else if (session.session_type === "pending") {
+    const supabase = createServerSupabase();
+    const result = await supabase
+      .from("pending_signups")
+      .select("email_verified_at")
+      .eq("id", (session as any).pending_signup_id)
+      .maybeSingle();
+
+    if (!result.data?.email_verified_at) {
+      return NextResponse.json(
+        { error: "Please verify your email before generating snapshots." },
+        { status: 403 }
+      );
+    }
+
+    userId = (session as any).pending_signup_id;
+  } else {
+    return NextResponse.json({ error: "Invalid session type." }, { status: 403 });
   }
 
   try {
     const body = (await request.json().catch(() => ({}))) as LeadSearchRequestBody;
     const questionnaire = toQuestionnaire(body);
-    if (!questionnaire.company_name) {
-      return NextResponse.json({ error: "Company name is required." }, { status: 400 });
-    }
     if (!questionnaire.product_description) {
       return NextResponse.json({ error: "Product description is required." }, { status: 400 });
     }
 
     const today = new Date().toISOString().slice(0, 10);
+    console.log(`[Quota] Starting lead search for user: ${userId}, today: ${today}`);
     
-    // Clean up previous day records for this user
-    await deletePreviousDayUsage(session.user_id, today);
+    let usedToday = 0;
+    let userLimit = { isUnlimited: false, dailyLimit: DAILY_LIMIT };
+
+    // Clean up old records
+    try {
+      await deletePreviousDayUsage(userId, today);
+    } catch (error) {
+      console.error("[Quota] Failed to delete previous day usage:", error);
+    }
+
+    // Read current usage
+    try {
+      usedToday = await readDailyUsage(userId, today);
+      console.log(`[Quota] User ${userId} has used ${usedToday} on ${today}`);
+    } catch (error) {
+      console.error("[Quota] Failed to read daily usage:", error);
+      usedToday = 0;
+    }
+
+    // Read user limit
+    try {
+      userLimit = await readUserLimit(userId);
+      console.log(`[Quota] User ${userId} limit: ${userLimit.isUnlimited ? 'unlimited' : userLimit.dailyLimit} daily searches`);
+    } catch (error) {
+      console.error("[Quota] Failed to read user limit:", error);
+      userLimit = { isUnlimited: false, dailyLimit: DAILY_LIMIT };
+    }
     
-    const usedToday = await readDailyUsage(session.user_id, today);
-    const userLimit = await readUserLimit(session.user_id);
     if (!userLimit.isUnlimited && usedToday >= userLimit.dailyLimit) {
+      console.log(`[Quota] User ${userId} has hit daily limit`);
       return NextResponse.json(
         {
           error: "Daily limit reached.",
@@ -298,20 +356,38 @@ export async function POST(request: Request) {
       })
     }));
 
-    // Only decrement quota if results were found
+    // Only write daily usage if results were found
     let finalUsedCount = usedToday;
+    console.log(`[Lead Search] Preview has ${preview.length} results for user ${userId}`);
+    
     if (preview.length > 0) {
       finalUsedCount = usedToday + 1;
-      await writeDailyUsage(session.user_id, today, finalUsedCount);
+      console.log(`[Lead Search] Incrementing usage for ${userId}: ${usedToday} -> ${finalUsedCount}`);
+      try {
+        console.log(`[Lead Search] Calling writeDailyUsage with payload: user_id=${userId}, usage_date=${today}, used_count=${finalUsedCount}`);
+        await writeDailyUsage(userId, today, finalUsedCount);
+        console.log(`[Lead Search] Successfully wrote usage: ${finalUsedCount}`);
+      } catch (error) {
+        console.error("[Lead Search] Failed to write daily usage:", error);
+      }
+    } else {
+      console.log(`[Lead Search] No results found, usage not incremented`);
     }
 
     const filtersHash = createHash("sha256").update(JSON.stringify(appliedFilters)).digest("hex");
-    await insertEvent({
-      userId: session.user_id,
-      clientId: session.client_id,
-      resultCount: preview.length,
-      filtersHash
-    });
+    
+    // Track events for all users
+    try {
+      await insertEvent({
+        userId: userId,
+        clientId: (session as any).client_id || "",
+        resultCount: preview.length,
+        filtersHash
+      });
+    } catch (error) {
+      // Analytics tracking is optional, don't fail the request
+      console.warn("Failed to track event:", error);
+    }
 
     return NextResponse.json({
       quota: {

@@ -33,14 +33,35 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
   }
-  if (session.session_type !== "app") {
-    return NextResponse.json({ error: "Only activated app users can check quota." }, { status: 403 });
+
+  let userId: string;
+
+  if (session.session_type === "app") {
+    userId = (session as any).user_id;
+  } else if (session.session_type === "pending") {
+    const supabase = createServerSupabase();
+    const result = await supabase
+      .from("pending_signups")
+      .select("email_verified_at")
+      .eq("id", (session as any).pending_signup_id)
+      .maybeSingle();
+
+    if (!result.data?.email_verified_at) {
+      return NextResponse.json(
+        { error: "Please verify your email first." },
+        { status: 403 }
+      );
+    }
+
+    userId = (session as any).pending_signup_id;
+  } else {
+    return NextResponse.json({ error: "Invalid session type." }, { status: 403 });
   }
 
   try {
     const today = new Date().toISOString().slice(0, 10);
-    const usedToday = await readDailyUsage(session.user_id, today);
-
+    
+    const usedToday = await readDailyUsage(userId, today);
     return NextResponse.json({
       used_today: usedToday,
       limit: DAILY_LIMIT,

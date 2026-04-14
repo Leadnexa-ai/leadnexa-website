@@ -6,10 +6,9 @@ type ApolloRequestInit = {
 };
 
 export type ApolloPeopleSearchFilters = {
-  person_titles?: string[];
   person_locations?: string[];
   organization_num_employees_ranges?: string[];
-  q_keywords?: string;
+  q_organization_keyword_tags?: string[];
 };
 
 export type ApolloSearchPerson = {
@@ -100,9 +99,6 @@ async function apolloRequest<T>(path: string, init: ApolloRequestInit = {}): Pro
 function normalizeApolloFilters(input: ApolloPeopleSearchFilters): ApolloPeopleSearchFilters {
   const normalized: ApolloPeopleSearchFilters = {};
 
-  if (Array.isArray(input.person_titles) && input.person_titles.length > 0) {
-    normalized.person_titles = input.person_titles;
-  }
   if (Array.isArray(input.person_locations) && input.person_locations.length > 0) {
     normalized.person_locations = input.person_locations;
   }
@@ -112,8 +108,8 @@ function normalizeApolloFilters(input: ApolloPeopleSearchFilters): ApolloPeopleS
   ) {
     normalized.organization_num_employees_ranges = input.organization_num_employees_ranges;
   }
-  if (typeof input.q_keywords === "string" && input.q_keywords.trim()) {
-    normalized.q_keywords = input.q_keywords.trim();
+  if (Array.isArray(input.q_organization_keyword_tags) && input.q_organization_keyword_tags.length > 0) {
+    normalized.q_organization_keyword_tags = input.q_organization_keyword_tags;
   }
 
   return normalized;
@@ -138,12 +134,17 @@ export async function searchPeople(filters: ApolloPeopleSearchFilters): Promise<
     }
 
     // Apollo may reject some combinations. Retry with a minimal payload to keep MVP resilient.
+    const minimalPayload: ApolloPeopleSearchFilters = {};
+    if (Array.isArray(filters.person_locations) && filters.person_locations.length > 0) {
+      minimalPayload.person_locations = filters.person_locations;
+    }
+    
     return apolloRequest<ApolloPeopleSearchResponse>("/api/v1/mixed_people/api_search", {
       method: "POST",
       body: {
         page: 1,
         per_page: 20,
-        q_keywords: filters.q_keywords ?? ""
+        ...minimalPayload
       }
     });
   }

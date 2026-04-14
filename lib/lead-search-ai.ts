@@ -1,18 +1,17 @@
 import type { ApolloPeopleSearchFilters } from "./apollo";
 
 export type LeadSearchQuestionnaire = {
-  company_name: string;
-  company_website: string;
+  company_name?: string;
+  company_website?: string;
   product_description: string;
   target_markets: string[];
-  exclusions: string[];
+  exclusions?: string[];
 };
 
 type AiFilterOutput = {
-  person_titles?: unknown;
   person_locations?: unknown;
   organization_num_employees_ranges?: unknown;
-  q_keywords?: unknown;
+  q_organization_keyword_tags?: unknown;
 };
 
 const MAX_LIST_ITEMS = 10;
@@ -36,83 +35,25 @@ function sanitizeStringList(input: unknown, maxItems: number): string[] {
   return Array.from(deduped);
 }
 
-function trimKeywordText(value: string): string {
-  return value.replace(/\s+/g, " ").trim().slice(0, MAX_KEYWORD_LENGTH);
-}
 
-function extractMainKeywords(text: string): string {
-  // Common stop words to filter out
-  const stopWords = new Set([
-    "the", "a", "an", "and", "or", "but", "in", "on", "at", "to", "for", "of", "with", "by", "from",
-    "is", "are", "was", "were", "be", "been", "being", "have", "has", "had", "do", "does", "did",
-    "will", "would", "could", "should", "may", "might", "must", "can", "that", "this", "these",
-    "those", "i", "you", "he", "she", "it", "we", "they", "what", "which", "who", "when", "where",
-    "why", "how", "all", "each", "every", "both", "few", "more", "most", "other", "some", "such",
-    "no", "nor", "not", "only", "own", "same", "so", "than", "too", "very", "just", "as"
-  ]);
-
-  // Split text into words and clean
-  const words = text
-    .toLowerCase()
-    .replace(/[^\w\s]/g, " ") // Remove special characters
-    .split(/\s+/)
-    .filter((word) => {
-      // Keep words that are not stop words and have more than 2 characters
-      return word.length > 2 && !stopWords.has(word);
-    });
-
-  // Get top 1 main keyword only
-  const mainKeyword = Array.from(new Set(words))[0];
-  
-  // Return single keyword
-  return mainKeyword || "";
-}
-
-function buildKeywordText(input: LeadSearchQuestionnaire): string {
-  // Only extract keywords from product description
-  if (input.product_description) {
-    const extractedKeywords = extractMainKeywords(input.product_description);
-    if (extractedKeywords) {
-      return trimKeywordText(extractedKeywords);
-    }
-  }
-  return "";
-}
 
 function normalizeFilterOutput(input: AiFilterOutput, fallback: LeadSearchQuestionnaire): ApolloPeopleSearchFilters {
-  const personTitles = sanitizeStringList(input.person_titles, MAX_LIST_ITEMS);
   const personLocations = sanitizeStringList(input.person_locations, MAX_LIST_ITEMS);
   const employeeRanges = sanitizeStringList(input.organization_num_employees_ranges, MAX_LIST_ITEMS);
-  let qKeywords =
-    typeof input.q_keywords === "string" && input.q_keywords.trim()
-      ? trimKeywordText(input.q_keywords)
-      : buildKeywordText(fallback);
-
-  // Safety check: Remove location words from keywords if they somehow ended up there
-  if (personLocations.length > 0 && qKeywords) {
-    const locationWords = personLocations
-      .flatMap((loc) => loc.split(/[,\s]+/).filter(Boolean))
-      .map((word) => word.toLowerCase());
-    
-    const keywordParts = qKeywords.toLowerCase().split(/[,\s]+/);
-    const filteredKeywords = keywordParts.filter((word) => !locationWords.includes(word));
-    qKeywords = trimKeywordText(filteredKeywords.join(" "));
-  }
+  const organizationKeywordTags = sanitizeStringList(input.q_organization_keyword_tags, MAX_LIST_ITEMS);
 
   return {
-    person_titles: personTitles,
     person_locations: personLocations,
     organization_num_employees_ranges: employeeRanges,
-    q_keywords: qKeywords
+    q_organization_keyword_tags: organizationKeywordTags
   };
 }
 
 function buildFallbackFilters(input: LeadSearchQuestionnaire): ApolloPeopleSearchFilters {
   return {
-    person_titles: [],
     person_locations: [],
     organization_num_employees_ranges: [],
-    q_keywords: buildKeywordText(input)
+    q_organization_keyword_tags: []
   };
 }
 
@@ -145,16 +86,14 @@ const system = [
     "Prefer practical B2B buyer titles and target regions from the provided context.",
     "",
     "IMPORTANT RULES:",
-    "- person_locations: Extract ONLY specific country or city names from target_markets (e.g., 'United States', 'Germany', 'London, UK'). NEVER include locations in q_keywords.",
-    "- person_titles: B2B buyer job titles only (Manager, Director, VP, etc.)",
+    "- person_locations: Extract specific country or city names from BOTH target_markets and product_description. Split comma-separated locations into individual strings (e.g., 'Ontario, Canada' becomes ['Ontario', 'Canada']). Examples: 'United States', 'Germany', 'London', 'Ontario', 'Canada'. Append locations found in product_description to locations from target_markets.",
     "- organization_num_employees_ranges: Size ranges like '1-50', '51-200', '201-500', '501-1000', '1001-5000', '5001-10000', '10001+'",
-    "- q_keywords: Extract ONLY two keywords from the whole sentence product_description. two words only, e.g., 'vending machines', 'b2b meeting', 'software', 'consulting'. NO phrases, NO locations, NO multiple words.",
+    "- q_organization_keyword_tags: Extract relevant industry keywords, verticals, and technology sectors from product_description and target_markets. Filter intelligently to keep only meaningful, industry-relevant terms. Examples: 'saas', 'fintech', 'consulting', 'ecommerce', 'healthcare'. Array of strings, max 10.",
     "",
     "Return JSON only with keys:",
-    "person_titles: string[]",
     "person_locations: string[]",
     "organization_num_employees_ranges: string[]",
-    "q_keywords: string",
+    "q_organization_keyword_tags: string[]",
     "No markdown. No extra keys."
 ].join("\n");
 

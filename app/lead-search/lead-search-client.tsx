@@ -4,8 +4,8 @@ import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type LeadSearchFormState = {
-  companyName: string;
-  companyWebsite: string;
+  // companyName: string;
+  // companyWebsite: string;
   productDescription: string;
   targetMarkets: string;
   // exclusions: string;
@@ -26,10 +26,10 @@ type RunResponse = {
     remaining: number | null;
   };
   applied_filters: {
-    person_titles?: string[];
     person_locations?: string[];
     organization_num_employees_ranges?: string[];
     q_keywords?: string;
+    q_organization_keyword_tags?: string[];
   };
   preview: PreviewLead[];
   snapshot_message: {
@@ -49,8 +49,8 @@ type QuotaInfo = {
 };
 
 const INITIAL_FORM: LeadSearchFormState = {
-  companyName: "",
-  companyWebsite: "",
+  // companyName: "",
+  // companyWebsite: "",
   productDescription: "",
   targetMarkets: ""
   // exclusions: ""
@@ -70,6 +70,8 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<RunResponse | null>(null);
   const [quota, setQuota] = useState<QuotaInfo | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     const fetchQuota = async () => {
@@ -78,9 +80,19 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
         if (response.ok) {
           const data = (await response.json()) as QuotaInfo;
           setQuota(data);
+          // Cache quota in localStorage
+          localStorage.setItem("leadSearchQuota", JSON.stringify(data));
         }
       } catch {
-        // Silently fail - quota will show default message
+        // Try to use cached quota from localStorage
+        const cachedQuota = localStorage.getItem("leadSearchQuota");
+        if (cachedQuota) {
+          try {
+            setQuota(JSON.parse(cachedQuota));
+          } catch {
+            // Silently fail - quota will show default message
+          }
+        }
       }
     };
 
@@ -111,8 +123,8 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          company_name: form.companyName,
-          company_website: form.companyWebsite,
+          // company_name: form.companyName,
+          // company_website: form.companyWebsite,
           product_description: form.productDescription,
           target_markets: parseMultiValueInput(form.targetMarkets)
           // exclusions: parseMultiValueInput(form.exclusions)
@@ -127,7 +139,10 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
       setResult(payload as RunResponse);
       if (payload.quota) {
         setQuota(payload.quota);
+        // Cache updated quota in localStorage
+        localStorage.setItem("leadSearchQuota", JSON.stringify(payload.quota));
       }
+      setCurrentPage(1);
     } catch (submitError) {
       const message = submitError instanceof Error ? submitError.message : "Failed to generate snapshot.";
       setError(message);
@@ -175,7 +190,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
 
         {isPendingSession && (
           <div className="mb-6 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100">
-            Your account is not fully activated yet. Complete activation before generating snapshots.
+            Your account is not fully verified yet. Complete verification before generating snapshots.
           </div>
         )}
 
@@ -187,7 +202,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
             <h2 className="text-xl font-semibold">AI Questionnaire</h2>
             <p className="mt-1 text-sm text-slate-300">Share your company context. AI will generate targeting filters for you.</p>
 
-            <label className="mt-5 block text-sm font-medium text-slate-200">Company name</label>
+            {/* <label className="mt-5 block text-sm font-medium text-slate-200">Company name</label>
             <input
               required
               value={form.companyName}
@@ -204,7 +219,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
               className="mt-2 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
               placeholder="https://yourcompany.com"
               disabled={isPendingSession || isLoading}
-            />
+            /> */}
 
             <label className="mt-4 block text-sm font-medium text-slate-200">What do you sell? (one short paragraph)</label>
             <textarea
@@ -221,7 +236,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
               value={form.targetMarkets}
               onChange={(event) => setForm((prev) => ({ ...prev, targetMarkets: event.target.value }))}
               className="mt-2 h-20 w-full rounded-xl border border-white/20 bg-slate-950/70 px-4 py-3 text-white outline-none focus:border-teal/50"
-              placeholder="North America, B2B SaaS, Seed to Series B"
+              placeholder="North America, United States, Germany, London, Ontario"
               disabled={isPendingSession || isLoading}
             />
 
@@ -262,6 +277,47 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
 
             {result && (
               <>
+                {/* Applied Filters Badge */}
+                {(result.applied_filters.person_locations?.length ||
+                  result.applied_filters.organization_num_employees_ranges?.length ||
+                  result.applied_filters.q_keywords ||
+                  result.applied_filters.q_organization_keyword_tags?.length) && (
+                  <div className="mt-5 rounded-2xl border border-sky-400/20 bg-sky-400/5 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-[0.1em] text-sky-200">Applied Filters</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {result.applied_filters.person_locations?.map((loc) => (
+                        <span
+                          key={loc}
+                          className="inline-flex items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs font-medium text-sky-100"
+                        >
+                          📍 {loc}
+                        </span>
+                      ))}
+                      {result.applied_filters.organization_num_employees_ranges?.map((range) => (
+                        <span
+                          key={range}
+                          className="inline-flex items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs font-medium text-sky-100"
+                        >
+                          👥 {range}
+                        </span>
+                      ))}
+                      {result.applied_filters.q_keywords && (
+                        <span className="inline-flex items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs font-medium text-sky-100">
+                          🔍 {result.applied_filters.q_keywords}
+                        </span>
+                      )}
+                      {result.applied_filters.q_organization_keyword_tags?.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center rounded-full border border-sky-300/30 bg-sky-300/10 px-3 py-1 text-xs font-medium text-sky-100"
+                        >
+                          🏢 {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mt-5 overflow-hidden rounded-2xl border border-white/10">
                   <table className="min-w-full divide-y divide-white/10 text-sm">
                     <thead className="bg-white/5">
@@ -281,7 +337,7 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
                           </td>
                         </tr>
                       )}
-                      {result.preview.map((lead, index) => (
+                      {result.preview.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE).map((lead, index) => (
                         <tr key={`${lead.full_name ?? "row"}-${index}`} className="align-top">
                           <td className="px-3 py-3 text-white">{lead.full_name ?? "-"}</td>
                           <td className="px-3 py-3 text-slate-200">{lead.title ?? "-"}</td>
@@ -302,9 +358,32 @@ export default function LeadSearchClient({ isPendingSession }: { isPendingSessio
                             )}
                           </td>
                         </tr>
-                      ))}
+                        ))}
                     </tbody>
                   </table>
+
+                  {/* Pagination Controls */}
+                  {result.preview.length > ITEMS_PER_PAGE && (
+                    <div className="flex items-center justify-between border-t border-white/10 bg-white/3 px-4 py-3">
+                      <button
+                        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                        disabled={currentPage === 1}
+                        className="rounded-lg px-3 py-2 text-xs font-semibold text-teal transition-all duration-200 hover:bg-teal/20 disabled:opacity-50 disabled:cursor-not-allowed border border-teal/30"
+                      >
+                        ← Previous
+                      </button>
+                      <span className="text-xs text-slate-400">
+                        Page {currentPage} of {Math.ceil(result.preview.length / ITEMS_PER_PAGE)}
+                      </span>
+                      <button
+                        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, Math.ceil(result.preview.length / ITEMS_PER_PAGE)))}
+                        disabled={currentPage === Math.ceil(result.preview.length / ITEMS_PER_PAGE)}
+                        className="rounded-lg px-3 py-2 text-xs font-semibold text-teal transition-all duration-200 hover:bg-teal/20 disabled:opacity-50 disabled:cursor-not-allowed border border-teal/30"
+                      >
+                        Next →
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-5 rounded-2xl border border-teal/30 bg-teal/10 p-4">
