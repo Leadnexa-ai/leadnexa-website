@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSessionFromCookie } from "../../lib/auth-session";
+import { createServerSupabase } from "../../lib/supabase-admin";
 import LeadSearchClient from "./lead-search-client";
 
 export const metadata: Metadata = {
@@ -21,5 +22,19 @@ export default async function LeadSearchPage() {
     redirect(`/login?next=${encodeURIComponent("/lead-search")}`);
   }
 
-  return <LeadSearchClient isPendingSession={session.session_type !== "app"} />;
+  let isPendingSession = false;
+
+  if (session.session_type === "pending") {
+    const supabase = createServerSupabase();
+    const result = await supabase
+      .from("pending_signups")
+      .select("email_verified_at")
+      .eq("id", session.pending_signup_id)
+      .maybeSingle();
+
+    // If email_verified_at is null, the session is still pending
+    isPendingSession = !result.data?.email_verified_at;
+  }
+
+  return <LeadSearchClient isPendingSession={isPendingSession} />;
 }
